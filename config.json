@@ -1,0 +1,6 @@
+{
+  "Port": "8080",
+  "DBURL": "mongodb://localhost:27017/",
+  "Database": "languages",
+  "Collection": "languages"
+}
