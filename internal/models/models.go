@@ -12,6 +12,8 @@ var (
 	ErrNotFound = errors.New("language not found")
 	// ErrInvalidId indicates an invalid id was sent to the application
 	ErrInvalidId = errors.New("invalid id provided")
+	// ErrInvalidQueryString indicates an invalid query string was sent to the application
+	ErrInvalidQueryString = errors.New("invalid query string")
 )
 
 type Languages struct {
@@ -26,4 +28,10 @@ type Language struct {
 	FirstAppeared *time.Time         `json:"firstAppeared" bson:"firstAppeared"`
 	Year          int32              `json:"year" bson:"year"`
 	Wiki          string             `json:"wiki" bson:"wiki"`
+}
+
+type QueryString struct {
+	Language
+	Page *int `json:"page"` // pointer to differentiate between nil and 0
+	Size *int `json:"size"` // pointer to differentiate between nil and 0
 }

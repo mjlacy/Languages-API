@@ -22,7 +22,7 @@ const (
 
 type Repository interface {
 	Close() error
-	GetLanguages(lanugage models.Language) (lanugages models.Languages, err error)
+	GetLanguages(lanugage models.QueryString) (lanugages models.Languages, err error)
 	GetLanguage(id string) (lanugage *models.Language, err error)
 	PostLanguage(lanugage *models.Language) (id string, err error)
 	PutLanguage(id string, lanugage *models.Language) (isCreated bool, err error)
@@ -74,33 +74,54 @@ func (r *Repo) Ping() error {
 	return r.client.Ping(ctx, readpref.Primary())
 }
 
-func (r *Repo) GetLanguages(language models.Language) (languages models.Languages, err error) {
-	languages.Languages = []models.Language{}
-
+func (r *Repo) GetLanguages(queryString models.QueryString) (languages models.Languages, err error) {
 	conditions := bson.M{}
+	opts := options.Find()
 
-	if language.Name != "" {
-		conditions["name"] = bson.M{"$eq": language.Name}
+	if queryString.Name != "" {
+		conditions["name"] = bson.M{"$eq": queryString.Name}
 	}
 
-	if len(language.Creators) > 0 {
-		conditions["creators"] = bson.M{"$all": language.Creators}
+	if len(queryString.Creators) > 0 {
+		conditions["creators"] = bson.M{"$all": queryString.Creators}
 	}
 
-	if len(language.Extensions) > 0 {
-		conditions["extensions"] = bson.M{"$all": language.Extensions}
+	if len(queryString.Extensions) > 0 {
+		conditions["extensions"] = bson.M{"$all": queryString.Extensions}
 	}
 
-	if language.FirstAppeared != nil {
-		conditions["firstAppeared"] = bson.M{"$eq": language.FirstAppeared}
+	if queryString.FirstAppeared != nil {
+		conditions["firstAppeared"] = bson.M{"$eq": queryString.FirstAppeared}
 	}
 
-	if language.Year != 0 {
-		conditions["year"] = bson.M{"$eq": language.Year}
+	if queryString.Year != 0 {
+		conditions["year"] = bson.M{"$eq": queryString.Year}
 	}
 
-	if language.Wiki != "" {
-		conditions["wiki"] = bson.M{"$eq": language.Wiki}
+	if queryString.Wiki != "" {
+		conditions["wiki"] = bson.M{"$eq": queryString.Wiki}
+	}
+
+	if queryString.Size != nil {
+		if *queryString.Size == -1 && queryString.Page != nil {
+			return languages, models.ErrInvalidQueryString
+		}
+
+		if *queryString.Size > 0 {
+			opts.SetLimit(int64(*queryString.Size))
+		} else if *queryString.Size != -1 {
+			return languages, models.ErrInvalidQueryString
+		}
+	} else {
+		opts.SetLimit(10)
+	}
+
+	if queryString.Page != nil {
+		if *queryString.Page > 1 {
+			opts.SetSkip(*opts.Limit * int64(*queryString.Page - 1))
+		} else if *queryString.Page < 1 {
+			return languages, models.ErrInvalidQueryString
+		}
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), FiveSeconds)
@@ -108,7 +129,9 @@ func (r *Repo) GetLanguages(language models.Language) (languages models.Language
 
 	collection := r.client.Database(r.config.Database).Collection(r.config.Collection)
 
-	cur, err := collection.Find(ctx, conditions)
+	languages.Languages = []models.Language{}
+
+	cur, err := collection.Find(ctx, conditions, opts)
 	if err != nil {
 		log.Error().Err(err).Msg("Failed to find languages")
 		return
