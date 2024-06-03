@@ -87,15 +87,9 @@
 							}
 						],
 						"url": {
-							"raw": "{{BaseUrl}}?size=-1",
+							"raw": "{{BaseUrl}}",
 							"host": [
 								"{{BaseUrl}}"
-							],
-							"query": [
-								{
-									"key": "size",
-									"value": "-1"
-								}
 							]
 						}
 					},
