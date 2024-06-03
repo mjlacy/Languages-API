@@ -1,0 +1,1584 @@
+{
+	"info": {
+		"_postman_id": "6bfd75f4-65d6-44a4-97cd-081017b42abc",
+		"name": "Languages API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "2629618"
+	},
+	"item": [
+		{
+			"name": "Get languages",
+			"item": [
+				{
+					"name": "Get all languages successfully",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", () => {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response body is json\", () => {",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.eql(\"application/json\");",
+									"});",
+									"",
+									"const jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Response languages value is not an empty array\", () => {",
+									"    pm.expect(jsonData.languages).to.be.an(\"array\");",
+									"    pm.expect(jsonData.languages).to.not.be.empty;",
+									"});",
+									"",
+									"pm.test(\"Response contains created language\", () => {",
+									"    const newLanguageExists = jsonData.languages.some(language => language._id === pm.environment.get(\"CreatedLanguageId\"));",
+									"    pm.expect(newLanguageExists).to.be.true;",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const body = {",
+									"    \"name\": \"C--\",",
+									"    \"creators\": [",
+									"        \"Simon Peyton Jones\",",
+									"        \"Norman Ramsey\"",
+									"    ],",
+									"    \"extensions\": [],",
+									"    \"firstAppeared\": null,",
+									"    \"year\": 1998,",
+									"    \"wiki\": \"https://en.wikipedia.org/wiki/C--\"",
+									"};",
+									"",
+									"const options = {",
+									"    url: pm.environment.get(\"BaseUrl\"),",
+									"    method: \"POST\",",
+									"    header: {",
+									"        \"Content-Type\": \"application/json\"",
+									"    },",
+									"    body: {",
+									"        mode: \"raw\",",
+									"        raw: JSON.stringify(body)",
+									"    }",
+									"};",
+									"",
+									"pm.sendRequest(options, (err, response) => {",
+									"    const createdId = response.headers.get(\"Location\").slice(1);",
+									"    pm.environment.set(\"CreatedLanguageId\", createdId);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{BaseUrl}}?size=-1",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"query": [
+								{
+									"key": "size",
+									"value": "-1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all languages with certain name",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", () => {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response body is json\", () => {",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.eql(\"application/json\");",
+									"});",
+									"",
+									"const jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Response languages value is not an empty array\", () => {",
+									"    pm.expect(jsonData.languages).to.be.an(\"array\");",
+									"    pm.expect(jsonData.languages).to.not.be.empty;",
+									"});",
+									"",
+									"pm.test(\"Response languages array only contains languages with the correct name\", () => {",
+									"    const newLanguageExists = jsonData.languages.all(language => language.name === \"Golang\");",
+									"    pm.expect(newLanguageExists).to.be.true;",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{BaseUrl}}?name=Golang",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"query": [
+								{
+									"key": "name",
+									"value": "Golang"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all languages with certain creators",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", () => {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response body is json\", () => {",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.eql(\"application/json\");",
+									"});",
+									"",
+									"const jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Response languages value is not an empty array\", () => {",
+									"    pm.expect(jsonData.languages).to.be.an(\"array\");",
+									"    pm.expect(jsonData.languages).to.not.be.empty;",
+									"});",
+									"",
+									"pm.test(\"Response languages array only contains languages with the correct creators\", () => {",
+									"    const newLanguageExists = jsonData.languages.all(language => language.creators.includes(\"Robert Griesemer\") && language.creators.includes(\"Ken Thompson\"));",
+									"    pm.expect(newLanguageExists).to.be.true;",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{BaseUrl}}?creators=Robert Griesemer,Ken Thompson",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"query": [
+								{
+									"key": "creators",
+									"value": "Robert Griesemer,Ken Thompson"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all languages with certain extensions",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", () => {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response body is json\", () => {",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.eql(\"application/json\");",
+									"});",
+									"",
+									"const jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Response languages value is not an empty array\", () => {",
+									"    pm.expect(jsonData.languages).to.be.an(\"array\");",
+									"    pm.expect(jsonData.languages).to.not.be.empty;",
+									"});",
+									"",
+									"pm.test(\"Response languages array only contains languages with the correct extensions\", () => {",
+									"    const newLanguageExists = jsonData.languages.all(language => language.extensions.includes(\".go\"));",
+									"    pm.expect(newLanguageExists).to.be.true;",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{BaseUrl}}?extensions=.go",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"query": [
+								{
+									"key": "extensions",
+									"value": ".go"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all languages with certain firstAppeared date",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", () => {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response body is json\", () => {",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.eql(\"application/json\");",
+									"});",
+									"",
+									"const jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Response languages value is not an empty array\", () => {",
+									"    pm.expect(jsonData.languages).to.be.an(\"array\");",
+									"    pm.expect(jsonData.languages).to.not.be.empty;",
+									"});",
+									"",
+									"pm.test(\"Response languages array only contains languages with the correct firstAppeared date\", () => {",
+									"    const newLanguageExists = jsonData.languages.all(language => language.firstAppeared === \"2009-11-10T00:00:00Z\");",
+									"    pm.expect(newLanguageExists).to.be.true;",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"packages": {},
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{BaseUrl}}?firstAppeared=2009-11-10T00:00:00.000Z",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"query": [
+								{
+									"key": "firstAppeared",
+									"value": "2009-11-10T00:00:00.000Z"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all languages with certain year",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", () => {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response body is json\", () => {",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.eql(\"application/json\");",
+									"});",
+									"",
+									"const jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Response languages value is not an empty array\", () => {",
+									"    pm.expect(jsonData.languages).to.be.an(\"array\");",
+									"    pm.expect(jsonData.languages).to.not.be.empty;",
+									"});",
+									"",
+									"pm.test(\"Response languages array only contains languages with the correct year\", () => {",
+									"    const newLanguageExists = jsonData.languages.all(language => language.year === 2009);",
+									"    pm.expect(newLanguageExists).to.be.true;",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{BaseUrl}}?year=2009",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"query": [
+								{
+									"key": "year",
+									"value": "2009"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all languages with certain wiki",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", () => {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response body is json\", () => {",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.eql(\"application/json\");",
+									"});",
+									"",
+									"const jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Response languages value is not an empty array\", () => {",
+									"    pm.expect(jsonData.languages).to.be.an(\"array\");",
+									"    pm.expect(jsonData.languages).to.not.be.empty;",
+									"});",
+									"",
+									"pm.test(\"Response languages array only contains languages with the correct wiki\", () => {",
+									"    const newLanguageExists = jsonData.languages.all(language => language.wiki === \"https://en.wikipedia.org/wiki/Go_(programming_language)\");",
+									"    pm.expect(newLanguageExists).to.be.true;",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{BaseUrl}}?wiki=https://en.wikipedia.org/wiki/Go_(programming_language)",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"query": [
+								{
+									"key": "wiki",
+									"value": "https://en.wikipedia.org/wiki/Go_(programming_language)"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all languages with certain name and year",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", () => {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response body is json\", () => {",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.eql(\"application/json\");",
+									"});",
+									"",
+									"const jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Response languages value is not an empty array\", () => {",
+									"    pm.expect(jsonData.languages).to.be.an(\"array\");",
+									"    pm.expect(jsonData.languages).to.not.be.empty;",
+									"});",
+									"",
+									"pm.test(\"Response languages array only contains languages with the correct name and year\", () => {",
+									"    const newLanguageExists = jsonData.languages.all(language => language.name === \"Golang\" && language.year === 2009);",
+									"    pm.expect(newLanguageExists).to.be.true;",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{BaseUrl}}?name=Golang&year=2009",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"query": [
+								{
+									"key": "name",
+									"value": "Golang"
+								},
+								{
+									"key": "year",
+									"value": "2009"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all languages with invalid name",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", () => {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response body is json\", () => {",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.eql(\"application/json\");",
+									"});",
+									"",
+									"const jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Response languages value is not an empty array\", () => {",
+									"    pm.expect(jsonData.languages).to.be.an(\"array\");",
+									"    pm.expect(jsonData.languages).to.be.empty;",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{BaseUrl}}?name=Fake",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"query": [
+								{
+									"key": "name",
+									"value": "Fake"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all languages with invalid query string",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", () => {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Response body is text\", () => {",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"text/plain\");",
+									"});",
+									"",
+									"pm.test(\"Response body is the error message\", () => {",
+									"    pm.response.to.have.body('Invalid query string\\n');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{BaseUrl}}?foo=bar",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"query": [
+								{
+									"key": "foo",
+									"value": "bar"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Get language",
+			"item": [
+				{
+					"name": "Get language successfully",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", () => {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response body is json\", () => {",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.eql(\"application/json\");",
+									"});",
+									"",
+									"const jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Response body is an object\", () => {",
+									"    pm.expect(jsonData).to.be.an(\"object\");",
+									"    pm.expect(jsonData).to.not.be.an(\"array\");",
+									"});",
+									"",
+									"pm.test(\"Response body is the correct language\", () => {",
+									"    pm.expect(jsonData._id).to.eql(pm.environment.get(\"CreatedLanguageId\"));",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{BaseUrl}}{{CreatedLanguageId}}",
+							"host": [
+								"{{BaseUrl}}{{CreatedLanguageId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get language with unused id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", () => {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"",
+									"pm.test(\"Response body is text\", () => {",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"text/plain\");",
+									"});",
+									"",
+									"pm.test(\"Response body is the error message\", () => {",
+									"    pm.response.to.have.body('No language found with that id\\n');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{BaseUrl}}123456789012345678901234",
+							"host": [
+								"{{BaseUrl}}123456789012345678901234"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get language with invalid id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", () => {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Response body is text\", () => {",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"text/plain\");",
+									"});",
+									"",
+									"pm.test(\"Response body is the error message\", () => {",
+									"    pm.response.to.have.body('The given id is not a valid id\\n');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{BaseUrl}}invalid",
+							"host": [
+								"{{BaseUrl}}invalid"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Create language",
+			"item": [
+				{
+					"name": "Create language successfully",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", () => {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Location header is present\", () => {",
+									"    pm.response.to.have.header(\"Location\");",
+									"});",
+									"",
+									"pm.test(\"Location header has a valid mongo id\", () => {",
+									"    pm.expect(pm.response.headers.get(\"Location\")).to.match(/^\\/[a-f\\d]{24}$/i);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"name": "Content-Type",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"F#\",\n    \"creators\": [\n        \t\"Don Syme\",\n            \"Microsoft Research\"\n    ],\n    \"extensions\": [\n        \".fs\", \".fsi\", \".fsx\", \".fsscript\"\n    ],\n    \"firstAppeared\": null,\n    \"year\": 2005,\n    \"wiki\": \"https://en.wikipedia.org/wiki/F_Sharp_(programming_language)\"\n}"
+						},
+						"url": {
+							"raw": "{{BaseUrl}}",
+							"host": [
+								"{{BaseUrl}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create language with bad input",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", () => {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Response body is text\", () => {",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"text/plain\");",
+									"});",
+									"",
+									"pm.test(\"Response body is the error message\", () => {",
+									"    pm.response.to.have.body('Invalid request body\\n');",
+									"});",
+									"",
+									"pm.test(\"Location header is not present\", () => {",
+									"    pm.response.to.not.have.header(\"Location\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"name": "Content-Type",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "Not json"
+						},
+						"url": {
+							"raw": "{{BaseUrl}}",
+							"host": [
+								"{{BaseUrl}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Update language fully",
+			"item": [
+				{
+					"name": "Update language fully successfully",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", () => {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Location header is present\", () => {",
+									"    pm.response.to.have.header(\"Location\");",
+									"});",
+									"",
+									"pm.test(\"Location header has the correct value\", () => {",
+									"    pm.expect(pm.response.headers.get(\"Location\")).to.equal(`/${pm.environment.get(\"CreatedLanguageId\")}`);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"packages": {},
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Groovy\",\n    \"creators\": [\n        \t\"James Strachan\",\n            \"Guillaume Laforge\",\n            \"Jochen Theodorou\",\n            \"Paul King\",\n            \"Cedric Champeau\"\n    ],\n    \"extensions\": [\n        \".groovy\", \".gvy\", \".gy\", \".gsh\"\n    ],\n    \"firstAppeared\": null,\n    \"year\": 2003,\n    \"wiki\": \"https://en.wikipedia.org/wiki/Apache_Groovy\"\n}"
+						},
+						"url": {
+							"raw": "{{BaseUrl}}{{CreatedLanguageId}}",
+							"host": [
+								"{{BaseUrl}}{{CreatedLanguageId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update language fully with bad input",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", () => {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Response body is text\", () => {",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"text/plain\");",
+									"});",
+									"",
+									"pm.test(\"Response body is the error message\", () => {",
+									"    pm.response.to.have.body('Invalid request body\\n');",
+									"});",
+									"",
+									"pm.test(\"Location header is not present\", () => {",
+									"    pm.response.to.not.have.header(\"Location\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "Not json"
+						},
+						"url": {
+							"raw": "{{BaseUrl}}{{CreatedLanguageId}}",
+							"host": [
+								"{{BaseUrl}}{{CreatedLanguageId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update language fully with invalid id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", () => {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Response body is text\", () => {",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"text/plain\");",
+									"});",
+									"",
+									"pm.test(\"Response body is the error message\", () => {",
+									"    pm.response.to.have.body('The given id is not a valid id\\n');",
+									"});",
+									"",
+									"pm.test(\"Location header is not present\", () => {",
+									"    pm.response.to.not.have.header(\"Location\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Groovy\",\n    \"creators\": [\n        \t\"James Strachan\",\n            \"Guillaume Laforge\",\n            \"Jochen Theodorou\",\n            \"Paul King\",\n            \"Cedric Champeau\"\n    ],\n    \"extensions\": [\n        \".groovy\", \".gvy\", \".gy\", \".gsh\"\n    ],\n    \"firstAppeared\": null,\n    \"year\": 2003,\n    \"wiki\": \"https://en.wikipedia.org/wiki/Apache_Groovy\"\n}"
+						},
+						"url": {
+							"raw": "{{BaseUrl}}invalid",
+							"host": [
+								"{{BaseUrl}}invalid"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Update language partially",
+			"item": [
+				{
+					"name": "Update language partially successfully",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", () => {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response body is empty\", () => {",
+									"    pm.response.to.have.body(\"\");",
+									"});",
+									"",
+									"pm.test(\"Location header is present\", () => {",
+									"    pm.response.to.have.header(\"Location\");",
+									"});",
+									"",
+									"pm.test(\"Location header has the correct value\", () => {",
+									"    pm.expect(pm.response.headers.get(\"Location\")).to.equal(`/${pm.environment.get(\"CreatedLanguageId\")}`);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"creators\": [\n        \"James Strachan\",\n        \"Guillaume Laforge\",\n        \"Jochen Theodorou\",\n        \"Paul King\",\n        \"Cedric Champeau\"\n    ]\n}"
+						},
+						"url": {
+							"raw": "{{BaseUrl}}{{CreatedLanguageId}}",
+							"host": [
+								"{{BaseUrl}}{{CreatedLanguageId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update language partially with bad input",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", () => {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Response body is text\", () => {",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"text/plain\");",
+									"});",
+									"",
+									"pm.test(\"Response body is the error message\", () => {",
+									"    pm.response.to.have.body('Invalid request body\\n');",
+									"});",
+									"",
+									"pm.test(\"Location header is not present\", () => {",
+									"    pm.response.to.not.have.header(\"Location\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "Not json"
+						},
+						"url": {
+							"raw": "{{BaseUrl}}{{CreatedLanguageId}}",
+							"host": [
+								"{{BaseUrl}}{{CreatedLanguageId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update language partially with unused id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", () => {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"",
+									"pm.test(\"Response body is text\", () => {",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"text/plain\");",
+									"});",
+									"",
+									"pm.test(\"Response body is the error message\", () => {",
+									"    pm.response.to.have.body('No language with that id found to update\\n');",
+									"});",
+									"",
+									"pm.test(\"Location header is not present\", () => {",
+									"    pm.response.to.not.have.header(\"Location\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"To Kill a Mockingbird\",\n    \"author\": \"Harper Lee\",\n    \"year\": 1960\n}"
+						},
+						"url": {
+							"raw": "{{BaseUrl}}123456789012345678901234",
+							"host": [
+								"{{BaseUrl}}123456789012345678901234"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update language partially with invalid id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", () => {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Response body is text\", () => {",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"text/plain\");",
+									"});",
+									"",
+									"pm.test(\"Response body is the error message\", () => {",
+									"    pm.response.to.have.body('The given id is not a valid id\\n');",
+									"});",
+									"",
+									"pm.test(\"Location header is not present\", () => {",
+									"    pm.response.to.not.have.header(\"Location\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"To Kill a Mockingbird\",\n    \"author\": \"Harper Lee\",\n    \"year\": 1960\n}"
+						},
+						"url": {
+							"raw": "{{BaseUrl}}invalid",
+							"host": [
+								"{{BaseUrl}}invalid"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Delete book",
+			"item": [
+				{
+					"name": "Delete book successfully",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 204\", () => {",
+									"    pm.response.to.have.status(204);",
+									"});",
+									"",
+									"pm.test(\"Response body is empty\", () => {",
+									"    pm.response.to.have.body(\"\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"name": "Content-Type",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{BaseUrl}}{{CreatedLanguageId}}",
+							"host": [
+								"{{BaseUrl}}{{CreatedLanguageId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete book with unused id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", () => {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"",
+									"pm.test(\"Response body is the error message\", () => {",
+									"    pm.response.to.have.body('No language with that id found to delete\\n');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"name": "Content-Type",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{BaseUrl}}123456789012345678901234",
+							"host": [
+								"{{BaseUrl}}123456789012345678901234"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete language with invalid id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", () => {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Response body is text\", () => {",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"text/plain\");",
+									"});",
+									"",
+									"pm.test(\"Response body is the error message\", () => {",
+									"    pm.response.to.have.body('The given id is not a valid id\\n');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{BaseUrl}}invalid",
+							"host": [
+								"{{BaseUrl}}invalid"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Upsert language",
+			"item": [
+				{
+					"name": "Upsert language successfully",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", () => {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Location header is present\", () => {",
+									"    pm.response.to.have.header(\"Location\");",
+									"});",
+									"",
+									"pm.test(\"Location header has the correct value\", () => {",
+									"    pm.expect(pm.response.headers.get(\"Location\")).to.equal(`/${pm.environment.get(\"CreatedLanguageId\")}`);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"name": "Content-Type",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Groovy\",\n    \"creators\": [\n        \t\"James Strachan\",\n            \"Guillaume Laforge\",\n            \"Jochen Theodorou\",\n            \"Paul King\",\n            \"Cedric Champeau\"\n    ],\n    \"extensions\": [\n        \".groovy\", \".gvy\", \".gy\", \".gsh\"\n    ],\n    \"firstAppeared\": null,\n    \"year\": 2003,\n    \"wiki\": \"https://en.wikipedia.org/wiki/Apache_Groovy\"\n}"
+						},
+						"url": {
+							"raw": "{{BaseUrl}}{{CreatedLanguageId}}",
+							"host": [
+								"{{BaseUrl}}{{CreatedLanguageId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Upsert language with invalid id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", () => {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Response body is text\", () => {",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"text/plain\");",
+									"});",
+									"",
+									"pm.test(\"Response body is the error message\", () => {",
+									"    pm.response.to.have.body('The given id is not a valid id\\n');",
+									"});",
+									"",
+									"pm.test(\"Location header is not present\", () => {",
+									"    pm.response.to.not.have.header(\"Location\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"name": "Content-Type",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"bookId\": 9,\n    \"title\": \"Wuthering Heights\",\n    \"author\": \"Emily Brontë\",\n    \"year\": 1847\n}"
+						},
+						"url": {
+							"raw": "{{BaseUrl}}invalid",
+							"host": [
+								"{{BaseUrl}}invalid"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Health",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", () => {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response body is json\", () => {",
+							"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.eql(\"application/json\");",
+							"});",
+							"",
+							"const jsonData = pm.response.json();",
+							"",
+							"pm.test(\"Response contains expected ApplicationName\", () => {",
+							"    const ApplicationNameExists = jsonData.Info.ApplicationName === \"Languages UI\";",
+							"    pm.expect(ApplicationNameExists).to.be.true;",
+							"});",
+							"",
+							"pm.test(\"Response contains valid version\", () => {",
+							"    pm.expect(jsonData.Info.Version).to.match(/^([0-9]+\\.)([0-9]+\\.)([0-9]+)$/);",
+							"});",
+							"",
+							"pm.test(\"Response contains OK value for Application\", () => {",
+							"    const ApplicationNameExists = jsonData.HealthCodes.Application === \"OK\";",
+							"    pm.expect(ApplicationNameExists).to.be.true;",
+							"});",
+							"",
+							"pm.test(\"Response contains OK value for Application\", () => {",
+							"    const ApplicationNameExists = jsonData.HealthCodes.MongoConnection === \"OK\";",
+							"    pm.expect(ApplicationNameExists).to.be.true;",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{BaseUrl}}health",
+					"host": [
+						"{{BaseUrl}}health"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Invalid url",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 404\", () => {",
+							"    pm.response.to.have.status(404);",
+							"});",
+							"",
+							"pm.test(\"Response body is text\", () => {",
+							"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"text/plain\");",
+							"});",
+							"",
+							"pm.test(\"Response body is the error message\", () => {",
+							"    pm.response.to.have.body('You have accessed an invalid URL\\n');",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{BaseUrl}}invalid/invalid",
+					"host": [
+						"{{BaseUrl}}invalid"
+					],
+					"path": [
+						"invalid"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
