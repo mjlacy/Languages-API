@@ -12,8 +12,6 @@ var (
 	ErrNotFound = errors.New("language not found")
 	// ErrInvalidId indicates an invalid id was sent to the application
 	ErrInvalidId = errors.New("invalid id provided")
-	// ErrInvalidQueryString indicates an invalid query string was sent to the application
-	ErrInvalidQueryString = errors.New("invalid query string")
 )
 
 type Languages struct {

@@ -102,27 +102,9 @@ func (r *Repo) GetLanguages(queryString models.QueryString) (languages models.La
 		conditions["wiki"] = bson.M{"$eq": queryString.Wiki}
 	}
 
-	if queryString.Size != nil {
-		if *queryString.Size == -1 && queryString.Page != nil {
-			return languages, models.ErrInvalidQueryString
-		}
+	opts.SetLimit(int64(*queryString.Size))
 
-		if *queryString.Size > 0 {
-			opts.SetLimit(int64(*queryString.Size))
-		} else if *queryString.Size != -1 {
-			return languages, models.ErrInvalidQueryString
-		}
-	} else {
-		opts.SetLimit(10)
-	}
-
-	if queryString.Page != nil {
-		if *queryString.Page > 1 {
-			opts.SetSkip(*opts.Limit * int64(*queryString.Page - 1))
-		} else if *queryString.Page < 1 {
-			return languages, models.ErrInvalidQueryString
-		}
-	}
+	opts.SetSkip(*opts.Limit * int64(*queryString.Page - 1))
 
 	ctx, cancel := context.WithTimeout(context.Background(), FiveSeconds)
 	defer cancel()

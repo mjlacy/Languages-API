@@ -98,14 +98,34 @@ func (ctrl *Controller) GetLanguagesHandler(repo mgo.Repository) http.HandlerFun
 			queryStrings.Extensions = strings.Split(queryStrings.Extensions[0], ",")
 		}
 
-		languages, err := repo.GetLanguages(queryStrings)
-		if err != nil {
-			if errors.Is(err, models.ErrInvalidQueryString) {
+		if queryStrings.Size != nil {
+			if *queryStrings.Size == -1 && queryStrings.Page != nil {
 				log.Error().Err(err).Msg("Invalid query string given")
 				http.Error(w, "Invalid query string", http.StatusBadRequest)
 				return
 			}
 
+			if *queryStrings.Size != -1 && *queryStrings.Size < 1 {
+				log.Error().Err(err).Msg("Invalid query string given")
+				http.Error(w, "Invalid query string", http.StatusBadRequest)
+				return
+			}
+		} else {
+			*queryStrings.Size = 10
+		}
+	
+		if queryStrings.Page != nil {
+			if *queryStrings.Page < 1 {
+				log.Error().Err(err).Msg("Invalid query string given")
+				http.Error(w, "Invalid query string", http.StatusBadRequest)
+				return
+			}
+		} else {
+			*queryStrings.Page = 1
+		}
+
+		languages, err := repo.GetLanguages(queryStrings)
+		if err != nil {
 			log.Error().Err(err).Msg("Failed to get languages")
 			http.Error(w, "An error occurred processing this request", http.StatusInternalServerError)
 			return
