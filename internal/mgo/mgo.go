@@ -110,7 +110,6 @@ func (r *Repo) GetLanguages(language models.Language) (languages models.Language
 
 	cur, err := collection.Find(ctx, conditions)
 	if err != nil {
-		log.Info().Msg("Error in find")
 		log.Error().Err(err).Msg("Failed to find languages")
 		return
 	}
