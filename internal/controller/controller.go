@@ -7,6 +7,7 @@ import (
 
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 	"net/url"
 	"strings"
@@ -111,9 +112,10 @@ func (ctrl *Controller) GetLanguagesHandler(repo mgo.Repository) http.HandlerFun
 				return
 			}
 		} else {
+			queryStrings.Size = new(int)
 			*queryStrings.Size = 10
 		}
-	
+
 		if queryStrings.Page != nil {
 			if *queryStrings.Page < 1 {
 				log.Error().Err(err).Msg("Invalid query string given")
@@ -121,18 +123,65 @@ func (ctrl *Controller) GetLanguagesHandler(repo mgo.Repository) http.HandlerFun
 				return
 			}
 		} else {
+			queryStrings.Page = new(int)
 			*queryStrings.Page = 1
 		}
 
-		languages, err := repo.GetLanguages(queryStrings)
+		languages, total, err := repo.GetLanguages(queryStrings)
 		if err != nil {
 			log.Error().Err(err).Msg("Failed to get languages")
 			http.Error(w, "An error occurred processing this request", http.StatusInternalServerError)
 			return
 		}
 
+		languagesResp := []models.LanguageResponse{}
+
+		for _, language := range languages.Languages {
+			languagesResp = append(languagesResp, models.LanguageResponse{
+				Language: language,
+				Links: models.Links{
+					Rel:  "self",
+					Href: fmt.Sprintf("/%s", language.Id),
+				},
+			})
+		}
+
+		paginationLinks := []models.Links{}
+
+		if *queryStrings.Size != -1 {
+			if total > (*queryStrings.Page * *queryStrings.Size) {
+				paginationLinks = append(paginationLinks, models.Links{
+					Rel:  "next",
+					Href: fmt.Sprintf("/?page=%d&size=%d", *queryStrings.Page+1, *queryStrings.Size),
+				})
+
+				paginationLinks = append(paginationLinks, models.Links{
+					Rel:  "last",
+					Href: fmt.Sprintf("/?page=%d&size=%d", (total / *queryStrings.Size)+1, *queryStrings.Size),
+				})
+			}
+
+			if *queryStrings.Page > 1 {
+				paginationLinks = append(paginationLinks, models.Links{
+					Rel:  "prev",
+					Href: fmt.Sprintf("/?page=%d&size=%d", *queryStrings.Page-1, *queryStrings.Size),
+				})
+
+				paginationLinks = append(paginationLinks, models.Links{
+					Rel:  "first",
+					Href: fmt.Sprintf("/?page=%d&size=%d", 1, *queryStrings.Size),
+				})
+			}
+		}
+
+		resp := models.LanguagesResponse{
+			Languages: languagesResp,
+			Links:     paginationLinks,
+			Total:     total,
+		}
+
 		w.Header().Set("Content-Type", "application/json")
-		if err := json.NewEncoder(w).Encode(languages); err != nil {
+		if err := json.NewEncoder(w).Encode(resp); err != nil {
 			log.Error().Err(err).Msg("Failed to write response")
 		}
 	}
@@ -185,7 +234,7 @@ func (ctrl *Controller) CreateLanguageHandler(repo mgo.Repository) http.HandlerF
 			return
 		}
 
-		w.Header().Add("Location", "/" + url.PathEscape(id))
+		w.Header().Add("Location", "/"+url.PathEscape(id))
 		w.WriteHeader(http.StatusCreated)
 	}
 }
@@ -214,7 +263,7 @@ func (ctrl *Controller) UpsertLanguageHandler(repo mgo.Repository) http.HandlerF
 			return
 		}
 
-		w.Header().Add("Location", "/" + url.PathEscape(id))
+		w.Header().Add("Location", "/"+url.PathEscape(id))
 
 		if isUpserted {
 			w.WriteHeader(http.StatusCreated)
@@ -262,7 +311,7 @@ func (ctrl *Controller) UpdateLanguageHandler(repo mgo.Repository) http.HandlerF
 			return
 		}
 
-		w.Header().Add("Location", "/" + url.PathEscape(id))
+		w.Header().Add("Location", "/"+url.PathEscape(id))
 		w.WriteHeader(http.StatusOK)
 	}
 }

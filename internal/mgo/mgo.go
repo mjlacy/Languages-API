@@ -22,7 +22,7 @@ const (
 
 type Repository interface {
 	Close() error
-	GetLanguages(lanugage models.QueryString) (lanugages models.Languages, err error)
+	GetLanguages(lanugage models.QueryString) (lanugages models.Languages, total int, err error)
 	GetLanguage(id string) (lanugage *models.Language, err error)
 	PostLanguage(lanugage *models.Language) (id string, err error)
 	PutLanguage(id string, lanugage *models.Language) (isCreated bool, err error)
@@ -74,7 +74,7 @@ func (r *Repo) Ping() error {
 	return r.client.Ping(ctx, readpref.Primary())
 }
 
-func (r *Repo) GetLanguages(queryString models.QueryString) (languages models.Languages, err error) {
+func (r *Repo) GetLanguages(queryString models.QueryString) (languages models.Languages, total int, err error) {
 	conditions := bson.M{}
 	opts := options.Find()
 
@@ -102,16 +102,28 @@ func (r *Repo) GetLanguages(queryString models.QueryString) (languages models.La
 		conditions["wiki"] = bson.M{"$eq": queryString.Wiki}
 	}
 
-	opts.SetLimit(int64(*queryString.Size))
-
-	opts.SetSkip(*opts.Limit * int64(*queryString.Page - 1))
-
 	ctx, cancel := context.WithTimeout(context.Background(), FiveSeconds)
 	defer cancel()
 
 	collection := r.client.Database(r.config.Database).Collection(r.config.Collection)
 
 	languages.Languages = []models.Language{}
+
+	count, err := collection.CountDocuments(ctx, bson.D{})
+	if err != nil {
+		log.Error().Err(err).Msg("Failed to count languages")
+		return
+	} else {
+		total = int(count)
+	}
+
+	if *queryString.Size != -1 {
+		opts.SetLimit(int64(*queryString.Size))
+	} else {
+		opts.SetLimit(count)
+	}
+
+	opts.SetSkip(*opts.Limit * int64(*queryString.Page - 1))
 
 	cur, err := collection.Find(ctx, conditions, opts)
 	if err != nil {

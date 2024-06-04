@@ -4,7 +4,7 @@ import (
 	"errors"
 	"time"
 
-	"go.mongodb.org/mongo-driver/bson/primitive"
+	// "go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 var (
@@ -19,13 +19,29 @@ type Languages struct {
 }
 
 type Language struct {
-	Id            primitive.ObjectID `json:"_id" bson:"_id,omitempty"`
+	Id            string             `json:"_id" bson:"_id,omitempty"` // Changed to string to simplify responses
 	Name          string             `json:"name" bson:"name"`
 	Creators      []string           `json:"creators" bson:"creators"`
 	Extensions    []string           `json:"extensions" bson:"extensions"`
 	FirstAppeared *time.Time         `json:"firstAppeared" bson:"firstAppeared"`
 	Year          int32              `json:"year" bson:"year"`
 	Wiki          string             `json:"wiki" bson:"wiki"`
+}
+
+type LanguagesResponse struct {
+	Languages []LanguageResponse `json:"languages"`
+	Links []Links `json:"links"`
+	Total int `json:"total"`
+}
+
+type LanguageResponse struct {
+	Language
+	Links Links `json:"links"`
+}
+
+type Links struct {
+	Rel  string `json:"rel"`
+	Href string `json:"href"`
 }
 
 type QueryString struct {
