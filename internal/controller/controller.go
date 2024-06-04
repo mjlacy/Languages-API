@@ -6,6 +6,7 @@ import (
 	"languages-api/internal/models"
 
 	"encoding/json"
+	"errors"
 	"net/http"
 	"net/url"
 	"strings"
@@ -117,12 +118,12 @@ func (ctrl *Controller) GetLanguageHandler(repo mgo.Repository) http.HandlerFunc
 
 		output, err := repo.GetLanguage(id)
 		if err != nil {
-			if err == models.ErrInvalidId {
+			if errors.Is(err, models.ErrInvalidId) {
 				http.Error(w, "The given id is not a valid id", http.StatusBadRequest)
 				return
 			}
 
-			if err == models.ErrNotFound {
+			if errors.Is(err, models.ErrNotFound) {
 				http.Error(w, "No language found with that id", http.StatusNotFound)
 				return
 			}
@@ -177,7 +178,7 @@ func (ctrl *Controller) UpsertLanguageHandler(repo mgo.Repository) http.HandlerF
 
 		isUpserted, err := repo.PutLanguage(id, &language)
 		if err != nil {
-			if err == models.ErrInvalidId {
+			if errors.Is(err, models.ErrInvalidId) {
 				http.Error(w, "The given id is not a valid id", http.StatusBadRequest)
 				return
 			}
@@ -220,12 +221,12 @@ func (ctrl *Controller) UpdateLanguageHandler(repo mgo.Repository) http.HandlerF
 
 		err = repo.PatchLanguage(id, update)
 		if err != nil {
-			if err == models.ErrInvalidId {
+			if errors.Is(err, models.ErrInvalidId) {
 				http.Error(w, "The given id is not a valid id", http.StatusBadRequest)
 				return
 			}
 
-			if err == models.ErrNotFound {
+			if errors.Is(err, models.ErrNotFound) {
 				http.Error(w, "No language with that id found to update", http.StatusNotFound)
 				return
 			}
@@ -246,12 +247,12 @@ func (ctrl *Controller) DeleteLanguageHandler(repo mgo.Repository) http.HandlerF
 
 		err := repo.DeleteLanguage(id)
 		if err != nil {
-			if err == models.ErrInvalidId {
+			if errors.Is(err, models.ErrInvalidId) {
 				http.Error(w, "The given id is not a valid id", http.StatusBadRequest)
 				return
 			}
 
-			if err == models.ErrNotFound {
+			if errors.Is(err, models.ErrNotFound) {
 				http.Error(w, "No language with that id found to delete", http.StatusNotFound)
 				return
 			}
