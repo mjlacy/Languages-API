@@ -36,7 +36,7 @@ type LanguagesResponse struct {
 
 type LanguageResponse struct {
 	Language
-	Links Links `json:"links"`
+	Links []Links `json:"links"`
 }
 
 type Links struct {

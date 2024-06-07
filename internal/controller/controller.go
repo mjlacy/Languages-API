@@ -29,18 +29,18 @@ type APIController interface {
 }
 
 type Info struct {
-	ApplicationName string `json:"ApplicationName`
-	Version         string `json:"Version`
+	ApplicationName string `json:"ApplicationName"`
+	Version         string `json:"Version"`
 }
 
 type HealthCodes struct {
-	Application     string `json:"Application`
-	MongoConnection string `json:"MongoConnection`
+	Application     string `json:"Application"`
+	MongoConnection string `json:"MongoConnection"`
 }
 
 type HealthCheck struct {
-	Info        Info        `json:"Info`
-	HealthCodes HealthCodes `json:"HealthCodes`
+	Info        Info        `json:"Info"`
+	HealthCodes HealthCodes `json:"HealthCodes"`
 }
 
 type Controller struct {
@@ -139,9 +139,11 @@ func (ctrl *Controller) GetLanguagesHandler(repo mgo.Repository) http.HandlerFun
 		for _, language := range languages.Languages {
 			languagesResp = append(languagesResp, models.LanguageResponse{
 				Language: language,
-				Links: models.Links{
-					Rel:  "self",
-					Href: fmt.Sprintf("/%s", language.Id),
+				Links: []models.Links{
+					models.Links{
+						Rel:  "self",
+						Href: fmt.Sprintf("/%s", language.Id),
+					},
 				},
 			})
 		}
