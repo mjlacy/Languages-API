@@ -32,6 +32,7 @@ type LanguagesResponse struct {
 	Languages []LanguageResponse `json:"languages"`
 	Links []Links `json:"links"`
 	Total int `json:"total"`
+	FilteredTotal int `json:"filteredTotal,omitempty"`
 }
 
 type LanguageResponse struct {

@@ -22,7 +22,7 @@ const (
 
 type Repository interface {
 	Close() error
-	GetLanguages(lanugage models.QueryString) (lanugages models.Languages, total int, err error)
+	GetLanguages(lanugage models.QueryString) (lanugages models.Languages, total int, filteredTotal int, err error)
 	GetLanguage(id string) (lanugage *models.Language, err error)
 	PostLanguage(lanugage *models.Language) (id string, err error)
 	PutLanguage(id string, lanugage *models.Language) (isCreated bool, err error)
@@ -74,7 +74,7 @@ func (r *Repo) Ping() error {
 	return r.client.Ping(ctx, readpref.Primary())
 }
 
-func (r *Repo) GetLanguages(queryString models.QueryString) (languages models.Languages, total int, err error) {
+func (r *Repo) GetLanguages(queryString models.QueryString) (languages models.Languages, total int, filteredTotal int, err error) {
 	conditions := bson.M{}
 	opts := options.Find()
 
@@ -115,6 +115,19 @@ func (r *Repo) GetLanguages(queryString models.QueryString) (languages models.La
 		return
 	} else {
 		total = int(count)
+	}
+
+	if len(conditions) > 0 {
+		filteredCount := int64(0)
+		filteredCount, err = collection.CountDocuments(ctx, conditions)
+		if err != nil {
+			log.Error().Err(err).Msg("Failed to count filtered languages")
+			return
+		} else {
+			filteredTotal = int(filteredCount)
+		}
+	} else {
+		filteredTotal = 0
 	}
 
 	if *queryString.Size != -1 {

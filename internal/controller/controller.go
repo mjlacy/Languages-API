@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"strconv"
 	"strings"
 
 	"github.com/gorilla/mux"
@@ -91,6 +92,9 @@ func (ctrl *Controller) GetLanguagesHandler(repo mgo.Repository) http.HandlerFun
 			return
 		}
 
+		rawQueryString := r.URL.Query().Encode()
+		formattedQueryString := rawQueryString
+
 		if len(queryStrings.Creators) > 0 {
 			queryStrings.Creators = strings.Split(queryStrings.Creators[0], ",")
 		}
@@ -100,6 +104,12 @@ func (ctrl *Controller) GetLanguagesHandler(repo mgo.Repository) http.HandlerFun
 		}
 
 		if queryStrings.Size != nil {
+			start := "size="
+    		stop := strconv.Itoa(*queryStrings.Size)
+			startIndex := strings.Index(formattedQueryString, start)
+			stopIndex := strings.Index(formattedQueryString, stop) + len(stop)
+			formattedQueryString = formattedQueryString[:startIndex] + formattedQueryString[stopIndex:]
+
 			if *queryStrings.Size == -1 && queryStrings.Page != nil {
 				log.Error().Err(err).Msg("Invalid query string given")
 				http.Error(w, "Invalid query string", http.StatusBadRequest)
@@ -117,6 +127,12 @@ func (ctrl *Controller) GetLanguagesHandler(repo mgo.Repository) http.HandlerFun
 		}
 
 		if queryStrings.Page != nil {
+			start := "page="
+    		stop := strconv.Itoa(*queryStrings.Page)
+			startIndex := strings.Index(formattedQueryString, start)
+			stopIndex := strings.Index(formattedQueryString, stop) + len(stop)
+			formattedQueryString = formattedQueryString[:startIndex] + formattedQueryString[stopIndex:]
+
 			if *queryStrings.Page < 1 {
 				log.Error().Err(err).Msg("Invalid query string given")
 				http.Error(w, "Invalid query string", http.StatusBadRequest)
@@ -127,7 +143,7 @@ func (ctrl *Controller) GetLanguagesHandler(repo mgo.Repository) http.HandlerFun
 			*queryStrings.Page = 1
 		}
 
-		languages, total, err := repo.GetLanguages(queryStrings)
+		languages, total, filteredTotal, err := repo.GetLanguages(queryStrings)
 		if err != nil {
 			log.Error().Err(err).Msg("Failed to get languages")
 			http.Error(w, "An error occurred processing this request", http.StatusInternalServerError)
@@ -150,28 +166,60 @@ func (ctrl *Controller) GetLanguagesHandler(repo mgo.Repository) http.HandlerFun
 
 		paginationLinks := []models.Links{}
 
-		if *queryStrings.Size != -1 {
-			if total > (*queryStrings.Page * *queryStrings.Size) {
-				paginationLinks = append(paginationLinks, models.Links{
-					Rel:  "next",
-					Href: fmt.Sprintf("/?page=%d&size=%d", *queryStrings.Page+1, *queryStrings.Size),
-				})
+		if len(formattedQueryString) > 0 {
+			if string(formattedQueryString[0]) == "&" {
+				formattedQueryString = formattedQueryString[1:]
+			}
 
-				paginationLinks = append(paginationLinks, models.Links{
-					Rel:  "last",
-					Href: fmt.Sprintf("/?page=%d&size=%d", (total / *queryStrings.Size)+1, *queryStrings.Size),
-				})
+			formattedQueryString = formattedQueryString + "&"
+		}
+
+		if *queryStrings.Size != -1 {
+			if total > (*queryStrings.Page * *queryStrings.Size) && len(languages.Languages) > 0 {
+				if filteredTotal == 0 || filteredTotal > (*queryStrings.Page * *queryStrings.Size) {
+					paginationLinks = append(paginationLinks, models.Links{
+						Rel:  "next",
+						Href: fmt.Sprintf("/?%spage=%d&size=%d", formattedQueryString, *queryStrings.Page+1, *queryStrings.Size),
+					})
+					if filteredTotal == 0 {
+						if total % *queryStrings.Size != 0 {
+							paginationLinks = append(paginationLinks, models.Links{
+								Rel:  "last",
+								Href: fmt.Sprintf("/?%spage=%d&size=%d", formattedQueryString, (total / *queryStrings.Size) + 1, *queryStrings.Size),
+							})
+						} else {
+							paginationLinks = append(paginationLinks, models.Links{
+								Rel:  "last",
+								Href: fmt.Sprintf("/?%spage=%d&size=%d", formattedQueryString, (total / *queryStrings.Size), *queryStrings.Size),
+							})
+						}
+						
+						
+					} else {
+						if filteredTotal % *queryStrings.Size != 0 {
+							paginationLinks = append(paginationLinks, models.Links{
+								Rel:  "last",
+								Href: fmt.Sprintf("/?%spage=%d&size=%d", formattedQueryString, (filteredTotal / *queryStrings.Size) + 1, *queryStrings.Size),
+							})
+						} else {
+							paginationLinks = append(paginationLinks, models.Links{
+								Rel:  "last",
+								Href: fmt.Sprintf("/?%spage=%d&size=%d", formattedQueryString, (filteredTotal / *queryStrings.Size), *queryStrings.Size),
+							})
+						}
+					}
+				}
 			}
 
 			if *queryStrings.Page > 1 {
 				paginationLinks = append(paginationLinks, models.Links{
 					Rel:  "prev",
-					Href: fmt.Sprintf("/?page=%d&size=%d", *queryStrings.Page-1, *queryStrings.Size),
+					Href: fmt.Sprintf("/?%spage=%d&size=%d", formattedQueryString, *queryStrings.Page-1, *queryStrings.Size),
 				})
 
 				paginationLinks = append(paginationLinks, models.Links{
 					Rel:  "first",
-					Href: fmt.Sprintf("/?page=%d&size=%d", 1, *queryStrings.Size),
+					Href: fmt.Sprintf("/?%spage=%d&size=%d", formattedQueryString, 1, *queryStrings.Size),
 				})
 			}
 		}
@@ -180,6 +228,7 @@ func (ctrl *Controller) GetLanguagesHandler(repo mgo.Repository) http.HandlerFun
 			Languages: languagesResp,
 			Links:     paginationLinks,
 			Total:     total,
+			FilteredTotal: filteredTotal,
 		}
 
 		w.Header().Set("Content-Type", "application/json")
