@@ -5,6 +5,7 @@ import (
 	"languages-api/internal/models"
 
 	"context"
+	"strings"
 	"time"
 
 	"github.com/rs/zerolog/log"
@@ -137,6 +138,22 @@ func (r *Repo) GetLanguages(queryString models.QueryString) (languages models.La
 	}
 
 	opts.SetSkip(*opts.Limit * int64(*queryString.Page - 1))
+
+	if queryString.SortBy != "" {
+		sortBySlice := strings.Split(queryString.SortBy, ",")
+
+		sortDoc := bson.D{}
+		for i := 0; i < len(sortBySlice); i++ {
+			elements := strings.Split(sortBySlice[i], " ")
+			if elements[1] == "asc" {
+				sortDoc = append(sortDoc, bson.E{Key: elements[0], Value: 1})
+			} else if elements[1] == "desc" {
+				sortDoc = append(sortDoc, bson.E{Key: elements[0], Value: -1})
+			}
+		}
+
+		opts.SetSort(sortDoc)
+	}
 
 	cur, err := collection.Find(ctx, conditions, opts)
 	if err != nil {

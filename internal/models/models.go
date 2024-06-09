@@ -49,4 +49,5 @@ type QueryString struct {
 	Language
 	Page *int `json:"page"` // pointer to differentiate between nil and 0
 	Size *int `json:"size"` // pointer to differentiate between nil and 0
+	SortBy string `json:"sortBy"`
 }
