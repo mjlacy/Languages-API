@@ -159,7 +159,7 @@ func (ctrl *Controller) CreateLanguageHandler(repo mgo.Repository) http.HandlerF
 			return
 		}
 
-		w.Header().Add("Location", "/" + url.PathEscape(id))
+		w.Header().Add("Location", "/"+url.PathEscape(id))
 		w.WriteHeader(http.StatusCreated)
 	}
 }
@@ -188,7 +188,7 @@ func (ctrl *Controller) UpsertLanguageHandler(repo mgo.Repository) http.HandlerF
 			return
 		}
 
-		w.Header().Add("Location", "/" + url.PathEscape(id))
+		w.Header().Add("Location", "/"+url.PathEscape(id))
 
 		if isUpserted {
 			w.WriteHeader(http.StatusCreated)
@@ -236,7 +236,7 @@ func (ctrl *Controller) UpdateLanguageHandler(repo mgo.Repository) http.HandlerF
 			return
 		}
 
-		w.Header().Add("Location", "/" + url.PathEscape(id))
+		w.Header().Add("Location", "/"+url.PathEscape(id))
 		w.WriteHeader(http.StatusOK)
 	}
 }
@@ -265,6 +265,6 @@ func (ctrl *Controller) DeleteLanguageHandler(repo mgo.Repository) http.HandlerF
 	}
 }
 
-func (ctrl *Controller) NotFoundPageHandler(w http.ResponseWriter, r *http.Request) {
+func (ctrl *Controller) NotFoundPageHandler(w http.ResponseWriter, _ *http.Request) {
 	http.Error(w, "You have accessed an invalid URL", http.StatusNotFound)
 }

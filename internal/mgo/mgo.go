@@ -5,6 +5,7 @@ import (
 	"languages-api/internal/models"
 
 	"context"
+	"errors"
 	"time"
 
 	"github.com/rs/zerolog/log"
@@ -22,10 +23,10 @@ const (
 
 type Repository interface {
 	Close() error
-	GetLanguages(lanugage models.Language) (lanugages models.Languages, err error)
-	GetLanguage(id string) (lanugage *models.Language, err error)
-	PostLanguage(lanugage *models.Language) (id string, err error)
-	PutLanguage(id string, lanugage *models.Language) (isCreated bool, err error)
+	GetLanguages(language models.Language) (languages models.Languages, err error)
+	GetLanguage(id string) (language *models.Language, err error)
+	PostLanguage(language *models.Language) (id string, err error)
+	PutLanguage(id string, language *models.Language) (bool, error)
 	PatchLanguage(id string, update models.Language) (err error)
 	DeleteLanguage(id string) (err error)
 	Ping() error
@@ -114,14 +115,19 @@ func (r *Repo) GetLanguages(language models.Language) (languages models.Language
 		return
 	}
 
-	defer cur.Close(ctx)
+	defer func() {
+		err := cur.Close(ctx)
+		if err != nil {
+			log.Error().Err(err).Msg("Failed to close database cursor")
+		}
+	}()
 
 	err = cur.All(ctx, &languages.Languages)
 
 	return
 }
 
-func (r *Repo) GetLanguage(id string) (Language *models.Language, err error) {
+func (r *Repo) GetLanguage(id string) (language *models.Language, err error) {
 	objectId, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return nil, models.ErrInvalidId
@@ -132,15 +138,15 @@ func (r *Repo) GetLanguage(id string) (Language *models.Language, err error) {
 
 	collection := r.client.Database(r.config.Database).Collection(r.config.Collection)
 
-	err = collection.FindOne(ctx, bson.M{"_id": objectId}).Decode(&Language)
-	if err == mongo.ErrNoDocuments {
+	err = collection.FindOne(ctx, bson.M{"_id": objectId}).Decode(&language)
+	if errors.Is(err, mongo.ErrNoDocuments) {
 		err = models.ErrNotFound
 	}
 
 	return
 }
 
-func (r *Repo) PostLanguage(Language *models.Language) (id string, err error) {
+func (r *Repo) PostLanguage(Language *models.Language) (string, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), FiveSeconds)
 	defer cancel()
 
@@ -148,13 +154,13 @@ func (r *Repo) PostLanguage(Language *models.Language) (id string, err error) {
 
 	result, err := collection.InsertOne(ctx, Language)
 	if err != nil {
-		return
+		return "", err
 	}
 
 	return result.InsertedID.(primitive.ObjectID).Hex(), err
 }
 
-func (r *Repo) PutLanguage(id string, Language *models.Language) (isCreated bool, err error) {
+func (r *Repo) PutLanguage(id string, Language *models.Language) (bool, error) {
 	objectId, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return false, models.ErrInvalidId
@@ -189,6 +195,7 @@ func (r *Repo) PatchLanguage(id string, update models.Language) (err error) {
 	if err == nil && result.ModifiedCount == 0 && result.MatchedCount == 0 {
 		err = models.ErrNotFound
 	}
+
 	return
 }
 
