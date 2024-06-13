@@ -33,7 +33,7 @@ func main() {
 	ctrl := controller.New(cfg)
 
 	srv := &http.Server{
-		Addr: ":" + cfg.Port,
+		Addr:    ":" + cfg.Port,
 		Handler: router.CreateHandler(ctrl, db),
 	}
 

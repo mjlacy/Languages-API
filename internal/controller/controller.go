@@ -105,7 +105,7 @@ func (ctrl *Controller) GetLanguagesHandler(repo mgo.Repository) http.HandlerFun
 
 		if queryStrings.Size != nil {
 			start := "size="
-    		stop := strconv.Itoa(*queryStrings.Size)
+			stop := strconv.Itoa(*queryStrings.Size)
 			startIndex := strings.Index(formattedQueryString, start)
 			stopIndex := strings.Index(formattedQueryString, stop) + len(stop)
 			formattedQueryString = formattedQueryString[:startIndex] + formattedQueryString[stopIndex:]
@@ -128,7 +128,7 @@ func (ctrl *Controller) GetLanguagesHandler(repo mgo.Repository) http.HandlerFun
 
 		if queryStrings.Page != nil {
 			start := "page="
-    		stop := strconv.Itoa(*queryStrings.Page)
+			stop := strconv.Itoa(*queryStrings.Page)
 			startIndex := strings.Index(formattedQueryString, start)
 			stopIndex := strings.Index(formattedQueryString, stop) + len(stop)
 			formattedQueryString = formattedQueryString[:startIndex] + formattedQueryString[stopIndex:]
@@ -150,7 +150,7 @@ func (ctrl *Controller) GetLanguagesHandler(repo mgo.Repository) http.HandlerFun
 			return
 		}
 
-		languagesResp := []models.LanguageResponse{}
+		var languagesResp []models.LanguageResponse
 
 		for _, language := range languages.Languages {
 			languagesResp = append(languagesResp, models.LanguageResponse{
@@ -164,7 +164,7 @@ func (ctrl *Controller) GetLanguagesHandler(repo mgo.Repository) http.HandlerFun
 			})
 		}
 
-		paginationLinks := []models.Links{}
+		var paginationLinks []models.Links
 
 		if len(formattedQueryString) > 0 {
 			if string(formattedQueryString[0]) == "&" {
@@ -175,17 +175,17 @@ func (ctrl *Controller) GetLanguagesHandler(repo mgo.Repository) http.HandlerFun
 		}
 
 		if *queryStrings.Size != -1 {
-			if total > (*queryStrings.Page * *queryStrings.Size) && len(languages.Languages) > 0 {
-				if filteredTotal == 0 || filteredTotal > (*queryStrings.Page * *queryStrings.Size) {
+			if total > (*queryStrings.Page**queryStrings.Size) && len(languages.Languages) > 0 {
+				if filteredTotal == 0 || filteredTotal > (*queryStrings.Page**queryStrings.Size) {
 					paginationLinks = append(paginationLinks, models.Links{
 						Rel:  "next",
 						Href: fmt.Sprintf("/?%spage=%d&size=%d", formattedQueryString, *queryStrings.Page+1, *queryStrings.Size),
 					})
 					if filteredTotal == 0 {
-						if total % *queryStrings.Size != 0 {
+						if total%*queryStrings.Size != 0 {
 							paginationLinks = append(paginationLinks, models.Links{
 								Rel:  "last",
-								Href: fmt.Sprintf("/?%spage=%d&size=%d", formattedQueryString, (total / *queryStrings.Size) + 1, *queryStrings.Size),
+								Href: fmt.Sprintf("/?%spage=%d&size=%d", formattedQueryString, (total / *queryStrings.Size)+1, *queryStrings.Size),
 							})
 						} else {
 							paginationLinks = append(paginationLinks, models.Links{
@@ -193,13 +193,12 @@ func (ctrl *Controller) GetLanguagesHandler(repo mgo.Repository) http.HandlerFun
 								Href: fmt.Sprintf("/?%spage=%d&size=%d", formattedQueryString, (total / *queryStrings.Size), *queryStrings.Size),
 							})
 						}
-						
-						
+
 					} else {
-						if filteredTotal % *queryStrings.Size != 0 {
+						if filteredTotal%*queryStrings.Size != 0 {
 							paginationLinks = append(paginationLinks, models.Links{
 								Rel:  "last",
-								Href: fmt.Sprintf("/?%spage=%d&size=%d", formattedQueryString, (filteredTotal / *queryStrings.Size) + 1, *queryStrings.Size),
+								Href: fmt.Sprintf("/?%spage=%d&size=%d", formattedQueryString, (filteredTotal / *queryStrings.Size)+1, *queryStrings.Size),
 							})
 						} else {
 							paginationLinks = append(paginationLinks, models.Links{
@@ -225,9 +224,9 @@ func (ctrl *Controller) GetLanguagesHandler(repo mgo.Repository) http.HandlerFun
 		}
 
 		resp := models.LanguagesResponse{
-			Languages: languagesResp,
-			Links:     paginationLinks,
-			Total:     total,
+			Languages:     languagesResp,
+			Links:         paginationLinks,
+			Total:         total,
 			FilteredTotal: filteredTotal,
 		}
 
@@ -392,6 +391,6 @@ func (ctrl *Controller) DeleteLanguageHandler(repo mgo.Repository) http.HandlerF
 	}
 }
 
-func (ctrl *Controller) NotFoundPageHandler(w http.ResponseWriter, r *http.Request) {
+func (ctrl *Controller) NotFoundPageHandler(w http.ResponseWriter, _ *http.Request) {
 	http.Error(w, "You have accessed an invalid URL", http.StatusNotFound)
 }
