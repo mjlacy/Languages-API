@@ -48,6 +48,15 @@ type Collection interface {
 	DeleteOne(id string) (err error)
 }
 
+type MockCollection interface {
+	Find(ctx context.Context, filter interface{}, opts ...*options.FindOptions) (cur *mongo.Cursor, err error)
+	FindOne(ctx context.Context, filter interface{}, opts ...*options.FindOneOptions) *mongo.SingleResult
+	InsertOne(ctx context.Context, document interface{}, opts ...*options.InsertOneOptions) (*mongo.InsertOneResult, error)
+	ReplaceOne(ctx context.Context, filter interface{}, replacement interface{}, opts ...*options.ReplaceOptions) (*mongo.UpdateResult, error)
+	UpdateOne(ctx context.Context, filter interface{}, update interface{}, opts ...*options.UpdateOptions) (*mongo.UpdateResult, error)
+	DeleteOne(ctx context.Context, filter interface{}, opts ...*options.DeleteOptions) (*mongo.DeleteResult, error)
+}
+
 // MongoClient implements the Client interface
 type MongoClient struct {
 	*mongo.Client
@@ -58,7 +67,7 @@ type MongoDatabase struct {
 }
 
 type MongoCollection struct {
-	*mongo.Collection
+	Collection MockCollection
 }
 
 type MongoCursor struct {
