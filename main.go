@@ -4,6 +4,7 @@ import (
 	"languages-api/internal/config"
 	"languages-api/internal/controller"
 	"languages-api/internal/mgo"
+	"languages-api/internal/repo"
 	"languages-api/internal/router"
 
 	"net/http"
@@ -18,7 +19,7 @@ func main() {
 		log.Fatal().Msgf("Error getting configurations: %v", err)
 	}
 
-	db, err := mgo.New(cfg)
+	db, err := repo.New(cfg, mgo.MongoConnector{})
 	if err != nil {
 		log.Fatal().Msgf("Error creating database client: %v", err)
 	}

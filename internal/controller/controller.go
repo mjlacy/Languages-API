@@ -2,8 +2,8 @@ package controller
 
 import (
 	"languages-api/internal/config"
-	"languages-api/internal/mgo"
 	"languages-api/internal/models"
+	"languages-api/internal/repo"
 
 	"encoding/json"
 	"errors"
@@ -17,13 +17,13 @@ import (
 )
 
 type APIController interface {
-	HealthCheckHandler(repo mgo.Repository) http.HandlerFunc
-	GetLanguagesHandler(repo mgo.Repository) http.HandlerFunc
-	GetLanguageHandler(repo mgo.Repository) http.HandlerFunc
-	CreateLanguageHandler(repo mgo.Repository) http.HandlerFunc
-	UpsertLanguageHandler(repo mgo.Repository) http.HandlerFunc
-	UpdateLanguageHandler(repo mgo.Repository) http.HandlerFunc
-	DeleteLanguageHandler(repo mgo.Repository) http.HandlerFunc
+	HealthCheckHandler(repo repo.Repository) http.HandlerFunc
+	GetLanguagesHandler(repo repo.Repository) http.HandlerFunc
+	GetLanguageHandler(repo repo.Repository) http.HandlerFunc
+	CreateLanguageHandler(repo repo.Repository) http.HandlerFunc
+	UpsertLanguageHandler(repo repo.Repository) http.HandlerFunc
+	UpdateLanguageHandler(repo repo.Repository) http.HandlerFunc
+	DeleteLanguageHandler(repo repo.Repository) http.HandlerFunc
 	NotFoundPageHandler(w http.ResponseWriter, r *http.Request)
 }
 
@@ -52,7 +52,7 @@ func New(cfg config.Config) *Controller {
 	}
 }
 
-func (ctrl *Controller) HealthCheckHandler(repo mgo.Repository) http.HandlerFunc {
+func (ctrl *Controller) HealthCheckHandler(repo repo.Repository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		mongoStatus := http.StatusOK
 		err := repo.Ping()
@@ -80,7 +80,7 @@ func (ctrl *Controller) HealthCheckHandler(repo mgo.Repository) http.HandlerFunc
 	}
 }
 
-func (ctrl *Controller) GetLanguagesHandler(repo mgo.Repository) http.HandlerFunc {
+func (ctrl *Controller) GetLanguagesHandler(repo repo.Repository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var queryStrings models.Language
 		err := schema.NewDecoder().Decode(&queryStrings, r.URL.Query())
@@ -112,7 +112,7 @@ func (ctrl *Controller) GetLanguagesHandler(repo mgo.Repository) http.HandlerFun
 	}
 }
 
-func (ctrl *Controller) GetLanguageHandler(repo mgo.Repository) http.HandlerFunc {
+func (ctrl *Controller) GetLanguageHandler(repo repo.Repository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := mux.Vars(r)["id"]
 
@@ -141,7 +141,7 @@ func (ctrl *Controller) GetLanguageHandler(repo mgo.Repository) http.HandlerFunc
 	}
 }
 
-func (ctrl *Controller) CreateLanguageHandler(repo mgo.Repository) http.HandlerFunc {
+func (ctrl *Controller) CreateLanguageHandler(repo repo.Repository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var language = models.Language{}
 
@@ -164,7 +164,7 @@ func (ctrl *Controller) CreateLanguageHandler(repo mgo.Repository) http.HandlerF
 	}
 }
 
-func (ctrl *Controller) UpsertLanguageHandler(repo mgo.Repository) http.HandlerFunc {
+func (ctrl *Controller) UpsertLanguageHandler(repo repo.Repository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := mux.Vars(r)["id"]
 
@@ -198,7 +198,7 @@ func (ctrl *Controller) UpsertLanguageHandler(repo mgo.Repository) http.HandlerF
 	}
 }
 
-func (ctrl *Controller) UpdateLanguageHandler(repo mgo.Repository) http.HandlerFunc {
+func (ctrl *Controller) UpdateLanguageHandler(repo repo.Repository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := mux.Vars(r)["id"]
 
@@ -241,7 +241,7 @@ func (ctrl *Controller) UpdateLanguageHandler(repo mgo.Repository) http.HandlerF
 	}
 }
 
-func (ctrl *Controller) DeleteLanguageHandler(repo mgo.Repository) http.HandlerFunc {
+func (ctrl *Controller) DeleteLanguageHandler(repo repo.Repository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := mux.Vars(r)["id"]
 

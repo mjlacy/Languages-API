@@ -2,14 +2,14 @@ package router
 
 import (
 	"languages-api/internal/controller"
-	"languages-api/internal/mgo"
+	"languages-api/internal/repo"
 
 	"net/http"
 
 	"github.com/gorilla/mux"
 )
 
-func CreateHandler(ctrl controller.APIController, repo *mgo.Repo) http.Handler {
+func CreateHandler(ctrl controller.APIController, repo *repo.Repo) http.Handler {
 	r := mux.NewRouter().StrictSlash(true)
 	r.HandleFunc("/health", ctrl.HealthCheckHandler(repo)).Methods(http.MethodGet)
 	r.HandleFunc("/", ctrl.GetLanguagesHandler(repo)).Methods(http.MethodGet)
