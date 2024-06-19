@@ -20,14 +20,12 @@ type Repository interface {
 }
 
 type Repo struct {
-	client     mgo.Client
-	collection string
-	database   string
+	client mgo.Client
 }
 
 func New(cfg config.Config, c mgo.Connector) (r *Repo, err error) {
 	r = &Repo{}
-	r.client, err = c.Connect(cfg.DBURL)
+	r.client, err = c.Connect(cfg)
 	if err != nil {
 		log.Error().Err(err).Msg("Failed to create database client")
 		return
@@ -38,9 +36,6 @@ func New(cfg config.Config, c mgo.Connector) (r *Repo, err error) {
 		log.Error().Err(err).Msg("Failed to ping database")
 		return
 	}
-
-	r.database = cfg.Database
-	r.collection = cfg.Collection
 
 	return
 }
@@ -54,25 +49,25 @@ func (r *Repo) Ping() error {
 }
 
 func (r *Repo) GetLanguages(language models.Language) (languages models.Languages, errors []error) {
-	return r.client.Database(r.database).Collection(r.collection).Find(language)
+	return r.client.Find(language)
 }
 
 func (r *Repo) GetLanguage(id string) (language models.Language, err error) {
-	return r.client.Database(r.database).Collection(r.collection).FindOne(id)
+	return r.client.FindOne(id)
 }
 
 func (r *Repo) PostLanguage(language models.Language) (insertedId string, err error) {
-	return r.client.Database(r.database).Collection(r.collection).InsertOne(language)
+	return r.client.InsertOne(language)
 }
 
 func (r *Repo) PutLanguage(id string, language models.Language) (isUpserted bool, err error) {
-	return r.client.Database(r.database).Collection(r.collection).ReplaceOne(id, language)
+	return r.client.ReplaceOne(id, language)
 }
 
 func (r *Repo) PatchLanguage(id string, update models.Language) (err error) {
-	return r.client.Database(r.database).Collection(r.collection).UpdateOne(id, update)
+	return r.client.UpdateOne(id, update)
 }
 
 func (r *Repo) DeleteLanguage(id string) (err error) {
-	return r.client.Database(r.database).Collection(r.collection).DeleteOne(id)
+	return r.client.DeleteOne(id)
 }
