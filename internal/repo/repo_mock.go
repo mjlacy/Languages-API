@@ -6,7 +6,7 @@ import (
 
 type MockRepo struct {
 	languages  models.Languages
-	language   *models.Language
+	language   models.Language
 	id         string
 	isUpserted bool
 	Err        error
@@ -20,15 +20,15 @@ func (m *MockRepo) GetLanguages(language models.Language) (languages models.Lang
 	return m.languages, m.Err
 }
 
-func (m *MockRepo) GetLanguage(id string) (language *models.Language, err error) {
+func (m *MockRepo) GetLanguage(id string) (language models.Language, err error) {
 	return m.language, m.Err
 }
 
-func (m *MockRepo) PostLanguage(language *models.Language) (string, error) {
+func (m *MockRepo) PostLanguage(language models.Language) (string, error) {
 	return m.id, m.Err
 }
 
-func (m *MockRepo) PutLanguage(id string, language *models.Language) (bool, error) {
+func (m *MockRepo) PutLanguage(id string, language models.Language) (bool, error) {
 	return m.isUpserted, m.Err
 }
 

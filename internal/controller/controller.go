@@ -98,9 +98,13 @@ func (ctrl *Controller) GetLanguagesHandler(repo repo.Repository) http.HandlerFu
 			queryStrings.Extensions = strings.Split(queryStrings.Extensions[0], ",")
 		}
 
-		languages, err := repo.GetLanguages(queryStrings)
-		if err != nil {
-			log.Error().Err(err).Msg("Failed to get languages")
+		languages, errs := repo.GetLanguages(queryStrings)
+		if len(errs) > 0 && errs[0] != nil {
+			for _, err := range errs {
+				if err != nil {
+					log.Error().Err(err).Msg("Failed to get languages")
+				}
+			}
 			http.Error(w, "An error occurred processing this request", http.StatusInternalServerError)
 			return
 		}
@@ -152,7 +156,7 @@ func (ctrl *Controller) CreateLanguageHandler(repo repo.Repository) http.Handler
 			return
 		}
 
-		id, err := repo.PostLanguage(&language)
+		id, err := repo.PostLanguage(language)
 		if err != nil {
 			log.Error().Err(err).Msg("Failed to create language")
 			http.Error(w, "An error occurred processing this request", http.StatusInternalServerError)
@@ -176,7 +180,7 @@ func (ctrl *Controller) UpsertLanguageHandler(repo repo.Repository) http.Handler
 			return
 		}
 
-		isUpserted, err := repo.PutLanguage(id, &language)
+		isUpserted, err := repo.PutLanguage(id, language)
 		if err != nil {
 			if errors.Is(err, models.ErrInvalidId) {
 				http.Error(w, "The given id is not a valid id", http.StatusBadRequest)

@@ -11,10 +11,10 @@ import (
 type Repository interface {
 	Close() error
 	Ping() error
-	GetLanguages(language models.Language) (languages models.Languages, err error)
-	GetLanguage(id string) (language *models.Language, err error)
-	PostLanguage(language *models.Language) (insertedId string, err error)
-	PutLanguage(id string, language *models.Language) (isUpserted bool, err error)
+	GetLanguages(language models.Language) (languages models.Languages, errors []error)
+	GetLanguage(id string) (language models.Language, err error)
+	PostLanguage(language models.Language) (insertedId string, err error)
+	PutLanguage(id string, language models.Language) (isUpserted bool, err error)
 	PatchLanguage(id string, update models.Language) (err error)
 	DeleteLanguage(id string) (err error)
 }
@@ -53,60 +53,26 @@ func (r *Repo) Ping() error {
 	return r.client.Ping()
 }
 
-func (r *Repo) GetLanguages(language models.Language) (languages models.Languages, err error) {
-	languages.Languages = []models.Language{}
-
-	collection := r.client.Database(r.database).Collection(r.collection)
-
-	cur, err := collection.Find(language)
-	if err != nil {
-		log.Error().Err(err).Msg("Failed to find languages")
-		return
-	}
-
-	defer func() {
-		err := cur.Close()
-		if err != nil {
-			log.Error().Err(err).Msg("Failed to close database cursor")
-		}
-	}()
-
-	err = cur.All(&languages.Languages)
-
-	return
+func (r *Repo) GetLanguages(language models.Language) (languages models.Languages, errors []error) {
+	return r.client.Database(r.database).Collection(r.collection).Find(language)
 }
 
-func (r *Repo) GetLanguage(id string) (language *models.Language, err error) {
-	collection := r.client.Database(r.database).Collection(r.collection)
-	err = collection.FindOne(id).Decode(&language)
-
-	return
+func (r *Repo) GetLanguage(id string) (language models.Language, err error) {
+	return r.client.Database(r.database).Collection(r.collection).FindOne(id)
 }
 
-func (r *Repo) PostLanguage(language *models.Language) (insertedId string, err error) {
-	collection := r.client.Database(r.database).Collection(r.collection)
-	insertedId, err = collection.InsertOne(language)
-
-	return
+func (r *Repo) PostLanguage(language models.Language) (insertedId string, err error) {
+	return r.client.Database(r.database).Collection(r.collection).InsertOne(language)
 }
 
-func (r *Repo) PutLanguage(id string, language *models.Language) (isUpserted bool, err error) {
-	collection := r.client.Database(r.database).Collection(r.collection)
-	isUpserted, err = collection.ReplaceOne(id, language)
-
-	return
+func (r *Repo) PutLanguage(id string, language models.Language) (isUpserted bool, err error) {
+	return r.client.Database(r.database).Collection(r.collection).ReplaceOne(id, language)
 }
 
 func (r *Repo) PatchLanguage(id string, update models.Language) (err error) {
-	collection := r.client.Database(r.database).Collection(r.collection)
-	err = collection.UpdateOne(id, update)
-
-	return
+	return r.client.Database(r.database).Collection(r.collection).UpdateOne(id, update)
 }
 
 func (r *Repo) DeleteLanguage(id string) (err error) {
-	collection := r.client.Database(r.database).Collection(r.collection)
-	err = collection.DeleteOne(id)
-
-	return
+	return r.client.Database(r.database).Collection(r.collection).DeleteOne(id)
 }
