@@ -83,10 +83,14 @@ func (ctrl *Controller) HealthCheckHandler(repo repo.Repository) http.HandlerFun
 func (ctrl *Controller) GetLanguagesHandler(repo repo.Repository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var queryStrings models.Language
+
 		err := schema.NewDecoder().Decode(&queryStrings, r.URL.Query())
 		if err != nil {
 			log.Error().Err(err).Msg("Failed to decode query string")
-			http.Error(w, "Invalid query string", http.StatusBadRequest)
+			w.WriteHeader(http.StatusBadRequest)
+			if _, innerErr := w.Write([]byte("Invalid query string")); innerErr != nil {
+				log.Error().Err(innerErr).Msg("Failed to write response")
+			}
 			return
 		}
 
