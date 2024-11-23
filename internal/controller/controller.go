@@ -127,12 +127,18 @@ func (ctrl *Controller) GetLanguageHandler(repo repo.Repository) http.HandlerFun
 		output, err := repo.GetLanguage(id)
 		if err != nil {
 			if errors.Is(err, models.ErrInvalidId) {
-				http.Error(w, "The given id is not a valid id", http.StatusBadRequest)
+				w.WriteHeader(http.StatusBadRequest)
+				if _, innerErr := w.Write([]byte("The given id is not a valid id")); innerErr != nil {
+					log.Error().Err(innerErr).Msg("Failed to write response")
+				}
 				return
 			}
 
 			if errors.Is(err, models.ErrNotFound) {
-				http.Error(w, "No language found with that id", http.StatusNotFound)
+				w.WriteHeader(http.StatusNotFound)
+				if _, innerErr := w.Write([]byte("No language found with that id")); innerErr != nil {
+					log.Error().Err(innerErr).Msg("Failed to write response")
+				}
 				return
 			}
 
@@ -156,7 +162,10 @@ func (ctrl *Controller) CreateLanguageHandler(repo repo.Repository) http.Handler
 		err := json.NewDecoder(r.Body).Decode(&language)
 		if err != nil {
 			log.Error().Err(err).Msg("Failed to decode request body")
-			http.Error(w, "Invalid request body", http.StatusBadRequest)
+			w.WriteHeader(http.StatusBadRequest)
+			if _, innerErr := w.Write([]byte("Invalid request body")); innerErr != nil {
+				log.Error().Err(innerErr).Msg("Failed to write response")
+			}
 			return
 		}
 
@@ -180,14 +189,20 @@ func (ctrl *Controller) UpsertLanguageHandler(repo repo.Repository) http.Handler
 		err := json.NewDecoder(r.Body).Decode(&language)
 		if err != nil {
 			log.Error().Err(err).Msg("Failed to decode request body")
-			http.Error(w, "Invalid request body", http.StatusBadRequest)
+			w.WriteHeader(http.StatusBadRequest)
+			if _, innerErr := w.Write([]byte("Invalid request body")); innerErr != nil {
+				log.Error().Err(innerErr).Msg("Failed to write response")
+			}
 			return
 		}
 
 		isUpserted, err := repo.PutLanguage(id, language)
 		if err != nil {
 			if errors.Is(err, models.ErrInvalidId) {
-				http.Error(w, "The given id is not a valid id", http.StatusBadRequest)
+				w.WriteHeader(http.StatusBadRequest)
+				if _, innerErr := w.Write([]byte("The given id is not a valid id")); innerErr != nil {
+					log.Error().Err(innerErr).Msg("Failed to write response")
+				}
 				return
 			}
 
@@ -196,9 +211,8 @@ func (ctrl *Controller) UpsertLanguageHandler(repo repo.Repository) http.Handler
 			return
 		}
 
-		w.Header().Add("Location", "/"+url.PathEscape(id))
-
 		if isUpserted {
+			w.Header().Add("Location", "/"+url.PathEscape(id))
 			w.WriteHeader(http.StatusCreated)
 		} else {
 			w.WriteHeader(http.StatusOK)
@@ -215,7 +229,10 @@ func (ctrl *Controller) UpdateLanguageHandler(repo repo.Repository) http.Handler
 		err := json.NewDecoder(r.Body).Decode(&update)
 		if err != nil {
 			log.Error().Err(err).Msg("Failed to decode request body")
-			http.Error(w, "Invalid request body", http.StatusBadRequest)
+			w.WriteHeader(http.StatusBadRequest)
+			if _, innerErr := w.Write([]byte("Invalid request body")); innerErr != nil {
+				log.Error().Err(innerErr).Msg("Failed to write response")
+			}
 			return
 		}
 
@@ -230,12 +247,18 @@ func (ctrl *Controller) UpdateLanguageHandler(repo repo.Repository) http.Handler
 		err = repo.PatchLanguage(id, update)
 		if err != nil {
 			if errors.Is(err, models.ErrInvalidId) {
-				http.Error(w, "The given id is not a valid id", http.StatusBadRequest)
+				w.WriteHeader(http.StatusBadRequest)
+				if _, innerErr := w.Write([]byte("The given id is not a valid id")); innerErr != nil {
+					log.Error().Err(innerErr).Msg("Failed to write response")
+				}
 				return
 			}
 
 			if errors.Is(err, models.ErrNotFound) {
-				http.Error(w, "No language with that id found to update", http.StatusNotFound)
+				w.WriteHeader(http.StatusNotFound)
+				if _, innerErr := w.Write([]byte("No language found with that id to update")); innerErr != nil {
+					log.Error().Err(innerErr).Msg("Failed to write response")
+				}
 				return
 			}
 
@@ -244,7 +267,6 @@ func (ctrl *Controller) UpdateLanguageHandler(repo repo.Repository) http.Handler
 			return
 		}
 
-		w.Header().Add("Location", "/"+url.PathEscape(id))
 		w.WriteHeader(http.StatusOK)
 	}
 }
@@ -256,12 +278,18 @@ func (ctrl *Controller) DeleteLanguageHandler(repo repo.Repository) http.Handler
 		err := repo.DeleteLanguage(id)
 		if err != nil {
 			if errors.Is(err, models.ErrInvalidId) {
-				http.Error(w, "The given id is not a valid id", http.StatusBadRequest)
+				w.WriteHeader(http.StatusBadRequest)
+				if _, innerErr := w.Write([]byte("The given id is not a valid id")); innerErr != nil {
+					log.Error().Err(innerErr).Msg("Failed to write response")
+				}
 				return
 			}
 
 			if errors.Is(err, models.ErrNotFound) {
-				http.Error(w, "No language with that id found to delete", http.StatusNotFound)
+				w.WriteHeader(http.StatusNotFound)
+				if _, innerErr := w.Write([]byte("No language found with that id to delete")); innerErr != nil {
+					log.Error().Err(innerErr).Msg("Failed to write response")
+				}
 				return
 			}
 			log.Error().Err(err).Msg("Failed to delete language")
@@ -274,5 +302,8 @@ func (ctrl *Controller) DeleteLanguageHandler(repo repo.Repository) http.Handler
 }
 
 func (ctrl *Controller) NotFoundPageHandler(w http.ResponseWriter, _ *http.Request) {
-	http.Error(w, "You have accessed an invalid URL", http.StatusNotFound)
+	w.WriteHeader(http.StatusNotFound)
+	if _, innerErr := w.Write([]byte("You have accessed an invalid URL")); innerErr != nil {
+		log.Error().Err(innerErr).Msg("Failed to write response")
+	}
 }
