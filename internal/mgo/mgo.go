@@ -136,11 +136,12 @@ func (mc MongoClient) Find(filter interface{}) (languages models.Languages, errs
 
 	errs = append(errs, err)
 	languages, err = MongoCursor{Cursor: cursor}.DecodeAll()
+
+	errs = append(errs, err)
+
 	if len(languages.Languages) == 0 {
 		languages.Languages = []models.Language{}
 	}
-
-	errs = append(errs, err)
 
 	return
 }

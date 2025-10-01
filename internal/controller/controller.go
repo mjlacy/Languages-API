@@ -66,7 +66,7 @@ func (ctrl *Controller) HealthCheckHandler(repo repo.Repository) http.HandlerFun
 				Version:         ctrl.Config.Version,
 			},
 			HealthCodes: HealthCodes{
-				Application:     "OK",
+				Application:     http.StatusText(http.StatusOK),
 				MongoConnection: http.StatusText(mongoStatus),
 			},
 		}

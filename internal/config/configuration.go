@@ -1,6 +1,7 @@
 package config
 
 import (
+	"github.com/rs/zerolog/log"
 	"github.com/spf13/viper"
 )
 
@@ -15,27 +16,29 @@ type Config struct {
 }
 
 func New() (Config, error) {
-	v := viper.New()
+	viper.SetDefault("AppName", AppName)
+	viper.SetDefault("ConfigPath", "config.json")
+	viper.SetDefault("Collection", "")
+	viper.SetDefault("Database", "")
+	viper.SetDefault("DBURL", "")
+	viper.SetDefault("Port", "8080")
+	viper.SetDefault("Version", Version)
 
-	v.SetDefault("AppName", AppName)
-	v.SetDefault("ConfigPath", "config.json")
-	v.SetDefault("Collection", "")
-	v.SetDefault("Database", "")
-	v.SetDefault("DBURL", "")
-	v.SetDefault("Port", "8080")
-	v.SetDefault("Version", Version)
+	viper.SetConfigType("json")
+	viper.SetConfigFile(viper.GetString("ConfigPath"))
 
-	v.AutomaticEnv()
-	v.SetConfigType("json")
-	v.SetConfigFile(v.GetString("ConfigPath"))
-
-	err := v.ReadInConfig()
+	err := viper.ReadInConfig()
 	if err != nil {
+		log.Error().Err(err).Msg("Error reading in config file")
 		return Config{}, err
 	}
 
 	var c Config
-	err = v.Unmarshal(&c)
+	err = viper.Unmarshal(&c)
+	if err != nil {
+		log.Error().Err(err).Msg("Error unmarshalling config file")
+		return Config{}, err
+	}
 
 	return c, err
 }
