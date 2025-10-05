@@ -7,7 +7,8 @@ type mockRepository struct {
 	errs       []error
 	id         string
 	isUpserted bool
-	l          models.Languages
+	ls         models.Languages
+	l          models.Language
 }
 
 func (r mockRepository) Ping() error {
@@ -19,11 +20,11 @@ func (r mockRepository) Close() error {
 }
 
 func (r mockRepository) GetLanguages(_ models.Language) (models.Languages, []error) {
-	return r.l, r.errs
+	return r.ls, r.errs
 }
 
 func (r mockRepository) GetLanguage(_ string) (models.Language, error) {
-	return r.l.Languages[0], r.err
+	return r.l, r.err
 }
 
 func (r mockRepository) PostLanguage(_ models.Language) (string, error) {

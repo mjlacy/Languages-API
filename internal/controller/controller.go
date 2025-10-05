@@ -87,6 +87,7 @@ func (ctrl *Controller) GetLanguagesHandler(repo repo.Repository) http.HandlerFu
 		err := schema.NewDecoder().Decode(&queryStrings, r.URL.Query())
 		if err != nil {
 			log.Error().Err(err).Msg("Failed to decode query string")
+			w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 			w.WriteHeader(http.StatusBadRequest)
 			if _, innerErr := w.Write([]byte("Invalid query string")); innerErr != nil {
 				log.Error().Err(innerErr).Msg("Failed to write response")
@@ -104,12 +105,16 @@ func (ctrl *Controller) GetLanguagesHandler(repo repo.Repository) http.HandlerFu
 
 		languages, errs := repo.GetLanguages(queryStrings)
 		if len(errs) > 0 && errs[0] != nil {
-			for _, err := range errs {
+			for _, err = range errs {
 				if err != nil {
 					log.Error().Err(err).Msg("Failed to get languages")
 				}
 			}
-			http.Error(w, "An error occurred processing this request", http.StatusInternalServerError)
+			w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+			w.WriteHeader(http.StatusInternalServerError)
+			if _, innerErr := w.Write([]byte("An error occurred processing this request")); innerErr != nil {
+				log.Error().Err(innerErr).Msg("Failed to write response")
+			}
 			return
 		}
 
@@ -127,6 +132,7 @@ func (ctrl *Controller) GetLanguageHandler(repo repo.Repository) http.HandlerFun
 		output, err := repo.GetLanguage(id)
 		if err != nil {
 			if errors.Is(err, models.ErrInvalidId) {
+				w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 				w.WriteHeader(http.StatusBadRequest)
 				if _, innerErr := w.Write([]byte("The given id is not a valid id")); innerErr != nil {
 					log.Error().Err(innerErr).Msg("Failed to write response")
@@ -135,6 +141,7 @@ func (ctrl *Controller) GetLanguageHandler(repo repo.Repository) http.HandlerFun
 			}
 
 			if errors.Is(err, models.ErrNotFound) {
+				w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 				w.WriteHeader(http.StatusNotFound)
 				if _, innerErr := w.Write([]byte("No language found with that id")); innerErr != nil {
 					log.Error().Err(innerErr).Msg("Failed to write response")
@@ -143,7 +150,11 @@ func (ctrl *Controller) GetLanguageHandler(repo repo.Repository) http.HandlerFun
 			}
 
 			log.Error().Err(err).Msg("Failed to get language")
-			http.Error(w, "An error occurred processing this request", http.StatusInternalServerError)
+			w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+			w.WriteHeader(http.StatusInternalServerError)
+			if _, innerErr := w.Write([]byte("An error occurred processing this request")); innerErr != nil {
+				log.Error().Err(innerErr).Msg("Failed to write response")
+			}
 			return
 		}
 
@@ -162,6 +173,7 @@ func (ctrl *Controller) CreateLanguageHandler(repo repo.Repository) http.Handler
 		err := json.NewDecoder(r.Body).Decode(&language)
 		if err != nil {
 			log.Error().Err(err).Msg("Failed to decode request body")
+			w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 			w.WriteHeader(http.StatusBadRequest)
 			if _, innerErr := w.Write([]byte("Invalid request body")); innerErr != nil {
 				log.Error().Err(innerErr).Msg("Failed to write response")
@@ -172,7 +184,11 @@ func (ctrl *Controller) CreateLanguageHandler(repo repo.Repository) http.Handler
 		id, err := repo.PostLanguage(language)
 		if err != nil {
 			log.Error().Err(err).Msg("Failed to create language")
-			http.Error(w, "An error occurred processing this request", http.StatusInternalServerError)
+			w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+			w.WriteHeader(http.StatusInternalServerError)
+			if _, innerErr := w.Write([]byte("An error occurred processing this request")); innerErr != nil {
+				log.Error().Err(innerErr).Msg("Failed to write response")
+			}
 			return
 		}
 
@@ -189,6 +205,7 @@ func (ctrl *Controller) UpsertLanguageHandler(repo repo.Repository) http.Handler
 		err := json.NewDecoder(r.Body).Decode(&language)
 		if err != nil {
 			log.Error().Err(err).Msg("Failed to decode request body")
+			w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 			w.WriteHeader(http.StatusBadRequest)
 			if _, innerErr := w.Write([]byte("Invalid request body")); innerErr != nil {
 				log.Error().Err(innerErr).Msg("Failed to write response")
@@ -199,6 +216,7 @@ func (ctrl *Controller) UpsertLanguageHandler(repo repo.Repository) http.Handler
 		isUpserted, err := repo.PutLanguage(id, language)
 		if err != nil {
 			if errors.Is(err, models.ErrInvalidId) {
+				w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 				w.WriteHeader(http.StatusBadRequest)
 				if _, innerErr := w.Write([]byte("The given id is not a valid id")); innerErr != nil {
 					log.Error().Err(innerErr).Msg("Failed to write response")
@@ -207,7 +225,11 @@ func (ctrl *Controller) UpsertLanguageHandler(repo repo.Repository) http.Handler
 			}
 
 			log.Error().Err(err).Msg("Failed to upsert language")
-			http.Error(w, "An error occurred processing this request", http.StatusInternalServerError)
+			w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+			w.WriteHeader(http.StatusInternalServerError)
+			if _, innerErr := w.Write([]byte("An error occurred processing this request")); innerErr != nil {
+				log.Error().Err(innerErr).Msg("Failed to write response")
+			}
 			return
 		}
 
@@ -229,6 +251,7 @@ func (ctrl *Controller) UpdateLanguageHandler(repo repo.Repository) http.Handler
 		err := json.NewDecoder(r.Body).Decode(&update)
 		if err != nil {
 			log.Error().Err(err).Msg("Failed to decode request body")
+			w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 			w.WriteHeader(http.StatusBadRequest)
 			if _, innerErr := w.Write([]byte("Invalid request body")); innerErr != nil {
 				log.Error().Err(innerErr).Msg("Failed to write response")
@@ -247,6 +270,7 @@ func (ctrl *Controller) UpdateLanguageHandler(repo repo.Repository) http.Handler
 		err = repo.PatchLanguage(id, update)
 		if err != nil {
 			if errors.Is(err, models.ErrInvalidId) {
+				w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 				w.WriteHeader(http.StatusBadRequest)
 				if _, innerErr := w.Write([]byte("The given id is not a valid id")); innerErr != nil {
 					log.Error().Err(innerErr).Msg("Failed to write response")
@@ -255,6 +279,7 @@ func (ctrl *Controller) UpdateLanguageHandler(repo repo.Repository) http.Handler
 			}
 
 			if errors.Is(err, models.ErrNotFound) {
+				w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 				w.WriteHeader(http.StatusNotFound)
 				if _, innerErr := w.Write([]byte("No language found with that id to update")); innerErr != nil {
 					log.Error().Err(innerErr).Msg("Failed to write response")
@@ -263,7 +288,12 @@ func (ctrl *Controller) UpdateLanguageHandler(repo repo.Repository) http.Handler
 			}
 
 			log.Error().Err(err).Msg("Failed to update language")
-			http.Error(w, "An error occurred processing this request", http.StatusInternalServerError)
+
+			w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+			w.WriteHeader(http.StatusInternalServerError)
+			if _, innerErr := w.Write([]byte("An error occurred processing this request")); innerErr != nil {
+				log.Error().Err(innerErr).Msg("Failed to write response")
+			}
 			return
 		}
 
@@ -278,6 +308,7 @@ func (ctrl *Controller) DeleteLanguageHandler(repo repo.Repository) http.Handler
 		err := repo.DeleteLanguage(id)
 		if err != nil {
 			if errors.Is(err, models.ErrInvalidId) {
+				w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 				w.WriteHeader(http.StatusBadRequest)
 				if _, innerErr := w.Write([]byte("The given id is not a valid id")); innerErr != nil {
 					log.Error().Err(innerErr).Msg("Failed to write response")
@@ -286,6 +317,7 @@ func (ctrl *Controller) DeleteLanguageHandler(repo repo.Repository) http.Handler
 			}
 
 			if errors.Is(err, models.ErrNotFound) {
+				w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 				w.WriteHeader(http.StatusNotFound)
 				if _, innerErr := w.Write([]byte("No language found with that id to delete")); innerErr != nil {
 					log.Error().Err(innerErr).Msg("Failed to write response")
@@ -293,7 +325,11 @@ func (ctrl *Controller) DeleteLanguageHandler(repo repo.Repository) http.Handler
 				return
 			}
 			log.Error().Err(err).Msg("Failed to delete language")
-			http.Error(w, "An error occurred processing this request", http.StatusInternalServerError)
+			w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+			w.WriteHeader(http.StatusInternalServerError)
+			if _, innerErr := w.Write([]byte("An error occurred processing this request")); innerErr != nil {
+				log.Error().Err(innerErr).Msg("Failed to write response")
+			}
 			return
 		}
 
@@ -302,6 +338,7 @@ func (ctrl *Controller) DeleteLanguageHandler(repo repo.Repository) http.Handler
 }
 
 func (ctrl *Controller) NotFoundPageHandler(w http.ResponseWriter, _ *http.Request) {
+	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 	w.WriteHeader(http.StatusNotFound)
 	if _, innerErr := w.Write([]byte("You have accessed an invalid URL")); innerErr != nil {
 		log.Error().Err(innerErr).Msg("Failed to write response")
