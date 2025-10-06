@@ -1,6 +1,32 @@
 package controller
 
-import "languages-api/internal/models"
+import (
+	"languages-api/internal/models"
+
+	"net/http"
+)
+
+type mockResponseWriter struct {
+	header     http.Header
+	message    string
+	num        int
+	statusCode int
+	err        error
+}
+
+func (w *mockResponseWriter) Header() http.Header {
+	return w.header
+}
+
+func (w *mockResponseWriter) Write(data []byte) (int, error) {
+	w.message = string(data)
+	return w.num, w.err
+}
+
+func (w *mockResponseWriter) WriteHeader(statusCode int) {
+	w.statusCode = statusCode
+	return
+}
 
 type mockRepository struct {
 	err        error
