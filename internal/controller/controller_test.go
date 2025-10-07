@@ -319,7 +319,7 @@ func Test_GetLanguagesHandler_ShouldReturnLanguagesOnSuccess(t *testing.T) {
 
 	expected := models.Languages{
 		Languages: []models.Language{
-			{
+			models.Language{
 				Id:   primitive.NewObjectID(),
 				Name: "Golang",
 				Creators: []string{

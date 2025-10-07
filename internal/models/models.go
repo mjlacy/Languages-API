@@ -12,6 +12,8 @@ var (
 	ErrNotFound = errors.New("language not found")
 	// ErrInvalidId indicates an invalid id was sent to the application
 	ErrInvalidId = errors.New("invalid id provided")
+	// ErrCursorNil indicates that the given cursor is nil, so no functions can be called off it
+	ErrCursorNil = errors.New("cursor is nil")
 )
 
 type Languages struct {

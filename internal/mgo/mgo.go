@@ -36,8 +36,8 @@ type Client interface {
 // MongoClient implements the Client interface
 type MongoClient struct {
 	*mongo.Client
-	databaseName   string
-	collectionName string
+	DatabaseName   string
+	CollectionName string
 }
 
 type MongoDatabase struct {
@@ -45,6 +45,10 @@ type MongoDatabase struct {
 }
 
 func (mc MongoCursor) DecodeAll() (languages models.Languages, err error) {
+	if mc.Cursor == nil {
+		return languages, models.ErrCursorNil
+	}
+
 	ctx, cancel := context.WithTimeout(context.Background(), FiveSeconds)
 	defer cancel()
 
@@ -132,12 +136,15 @@ func (mc MongoClient) Find(filter interface{}) (languages models.Languages, errs
 	ctx, cancel := context.WithTimeout(context.Background(), FiveSeconds)
 	defer cancel()
 
-	cursor, err := mc.Client.Database(mc.databaseName).Collection(mc.collectionName).Find(ctx, conditions)
+	cursor, err := mc.Client.Database(mc.DatabaseName).Collection(mc.CollectionName).Find(ctx, conditions)
+	if err != nil {
+		errs = append(errs, err)
+	}
 
-	errs = append(errs, err)
 	languages, err = MongoCursor{Cursor: cursor}.DecodeAll()
-
-	errs = append(errs, err)
+	if err != nil {
+		errs = append(errs, err)
+	}
 
 	if len(languages.Languages) == 0 {
 		languages.Languages = []models.Language{}
@@ -155,7 +162,7 @@ func (mc MongoClient) FindOne(id string) (language models.Language, err error) {
 	ctx, cancel := context.WithTimeout(context.Background(), FiveSeconds)
 	defer cancel()
 
-	err = MongoSingleResult{SingleResult: mc.Client.Database(mc.databaseName).Collection(mc.collectionName).FindOne(ctx, bson.M{"_id": objectId})}.Decode(&language)
+	err = MongoSingleResult{SingleResult: mc.Client.Database(mc.DatabaseName).Collection(mc.CollectionName).FindOne(ctx, bson.M{"_id": objectId})}.Decode(&language)
 
 	return
 }
@@ -164,7 +171,7 @@ func (mc MongoClient) InsertOne(document interface{}) (insertedId string, err er
 	ctx, cancel := context.WithTimeout(context.Background(), FiveSeconds)
 	defer cancel()
 
-	ior, err := mc.Client.Database(mc.databaseName).Collection(mc.collectionName).InsertOne(ctx, document)
+	ior, err := mc.Client.Database(mc.DatabaseName).Collection(mc.CollectionName).InsertOne(ctx, document)
 
 	insertedId = MongoInsertOneResult{InsertOneResult: ior}.GetId()
 
@@ -181,7 +188,7 @@ func (mc MongoClient) ReplaceOne(id string, document interface{}) (isUpserted bo
 	defer cancel()
 
 	upsert := options.ReplaceOptions{}
-	ur, err := mc.Client.Database(mc.databaseName).Collection(mc.collectionName).ReplaceOne(ctx, bson.M{"_id": objectId}, document, upsert.SetUpsert(true))
+	ur, err := mc.Client.Database(mc.DatabaseName).Collection(mc.CollectionName).ReplaceOne(ctx, bson.M{"_id": objectId}, document, upsert.SetUpsert(true))
 
 	isUpserted = MongoUpdateResult{UpdateResult: ur}.GetIsUpserted()
 
@@ -199,9 +206,9 @@ func (mc MongoClient) UpdateOne(id string, update interface{}) (err error) {
 
 	lang := update.(models.Language)
 
-	ur, err := mc.Client.Database(mc.databaseName).Collection(mc.collectionName).UpdateOne(ctx, bson.M{"_id": objectId}, bson.M{"$set": buildMap(lang)})
+	ur, err := mc.Client.Database(mc.DatabaseName).Collection(mc.CollectionName).UpdateOne(ctx, bson.M{"_id": objectId}, bson.M{"$set": buildMap(lang)})
 
-	modifiedCount, matchedCount := MongoUpdateResult{UpdateResult: ur}.GetCounts()
+	modifiedCount, matchedCount := MongoUpdateResult{UpdateResult: ur}.GetUpdateCounts()
 
 	if err == nil && modifiedCount == 0 && matchedCount == 0 {
 		err = models.ErrNotFound
@@ -219,7 +226,7 @@ func (mc MongoClient) DeleteOne(id string) (err error) {
 	ctx, cancel := context.WithTimeout(context.Background(), FiveSeconds)
 	defer cancel()
 
-	dr, err := mc.Client.Database(mc.databaseName).Collection(mc.collectionName).DeleteOne(ctx, bson.M{"_id": objectId})
+	dr, err := mc.Client.Database(mc.DatabaseName).Collection(mc.CollectionName).DeleteOne(ctx, bson.M{"_id": objectId})
 
 	deletedCount := MongoDeleteResult{DeleteResult: dr}.GetDeletedCount()
 	if err == nil && deletedCount == 0 {
@@ -246,19 +253,35 @@ func (msr MongoSingleResult) Decode(result interface{}) (err error) {
 }
 
 func (mior MongoInsertOneResult) GetId() string {
-	return mior.InsertedID.(primitive.ObjectID).Hex()
+	if mior.InsertOneResult != nil {
+		return mior.InsertedID.(primitive.ObjectID).Hex()
+	} else {
+		return ""
+	}
 }
 
 func (mur MongoUpdateResult) GetIsUpserted() bool {
-	return mur.UpsertedCount > 0
+	if mur.UpdateResult != nil {
+		return mur.UpsertedCount > 0
+	} else {
+		return false
+	}
 }
 
-func (mur MongoUpdateResult) GetCounts() (int64, int64) {
-	return mur.ModifiedCount, mur.MatchedCount
+func (mur MongoUpdateResult) GetUpdateCounts() (int64, int64) {
+	if mur.UpdateResult != nil {
+		return mur.ModifiedCount, mur.MatchedCount
+	} else {
+		return 0, 0
+	}
 }
 
 func (mdr MongoDeleteResult) GetDeletedCount() int64 {
-	return mdr.DeletedCount
+	if mdr.DeleteResult != nil {
+		return mdr.DeletedCount
+	} else {
+		return 0
+	}
 }
 
 // Connector specifies the methods needed to connect to mongo
@@ -276,7 +299,7 @@ func (mc MongoConnector) Connect(cfg config.Config) (Client, error) {
 	opts := options.Client().ApplyURI(cfg.DBURL)
 
 	client, err := mongo.Connect(ctx, opts)
-	return &MongoClient{Client: client, databaseName: cfg.Database, collectionName: cfg.Collection}, err
+	return &MongoClient{Client: client, DatabaseName: cfg.Database, CollectionName: cfg.Collection}, err
 }
 
 func buildMap(language models.Language) bson.M {
