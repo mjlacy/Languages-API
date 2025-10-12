@@ -1,0 +1,50 @@
+services:
+  mariadb:
+    build:
+      context: "."
+      dockerfile: "./CustomMariaDB.Dockerfile"
+    container_name: mariadb
+    ports:
+      - "3306:3306"
+    environment:
+      MARIADB_USER: admin
+      MARIADB_PASSWORD: password
+      MARIADB_DATABASE: languages
+      MARIADB_ROOT_PASSWORD: password
+    healthcheck:
+      test: [ "CMD", "healthcheck.sh", "--connect", "--innodb_initialized" ]
+      start_period: 10s
+      interval: 10s
+      timeout: 5s
+      retries: 3
+  adminer:
+    image: adminer:latest
+    container_name: adminer
+    depends_on:
+      - mariadb
+    ports:
+      - "3307:8000"
+    environment:
+      ADMINER_DEFAULT_SERVER: mariadb
+  languages-api:
+    container_name: languages-api
+    build:
+      context: "../../"
+      dockerfile: "./build/package/Dockerfile"
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    volumes:
+      - "../../config.json:/app/config.json"
+  newman:
+    image: postman/newman:alpine
+    container_name: newman
+    command: run /etc/newman/collections/Languages-API.postman_collection.json -e /etc/newman/environments/Languages-API.postman_environment.json --reporters cli
+    volumes:
+      - ../../Languages-API.postman_collection.json:/etc/newman/collections/Languages-API.postman_collection.json
+      - ../../Languages-API.postman_environment.json:/etc/newman/environments/Languages-API.postman_environment.json
+    working_dir: /etc/newman
+    depends_on:
+       - languages-api

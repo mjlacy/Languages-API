@@ -8,7 +8,7 @@ import (
 type Config struct {
 	AppName    string
 	ConfigPath string
-	Collection string
+	Table      string
 	Database   string
 	DBURL      string
 	Port       string

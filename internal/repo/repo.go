@@ -2,7 +2,7 @@ package repo
 
 import (
 	"languages-api/internal/config"
-	"languages-api/internal/mgo"
+	"languages-api/internal/mariadb"
 	"languages-api/internal/models"
 
 	"github.com/rs/zerolog/log"
@@ -20,54 +20,53 @@ type Repository interface {
 }
 
 type Repo struct {
-	client mgo.Client
+	Client mariadb.Client
 }
 
-func New(cfg config.Config, c mgo.Connector) (r *Repo, err error) {
+func New(cfg config.Config, c mariadb.Connector) (r *Repo, err error) {
 	r = &Repo{}
-	r.client, err = c.Connect(cfg)
+	r.Client, err = c.Connect(cfg)
 	if err != nil {
 		log.Error().Err(err).Msg("Failed to create database client")
 		return
 	}
 
-	err = r.client.Ping()
+	err = r.Client.Ping()
 	if err != nil {
-		log.Error().Err(err).Msg("Failed to ping database")
-		return
+		log.Error().Err(err).Msgf("Error while pinging Maria: %v", err)
 	}
 
 	return
 }
 
 func (r *Repo) Close() error {
-	return r.client.Disconnect()
+	return r.Client.Disconnect()
 }
 
 func (r *Repo) Ping() error {
-	return r.client.Ping()
+	return r.Client.Ping()
 }
 
 func (r *Repo) GetLanguages(language models.Language) (languages models.Languages, errors []error) {
-	return r.client.Find(language)
+	return r.Client.Find(language)
 }
 
 func (r *Repo) GetLanguage(id string) (language models.Language, err error) {
-	return r.client.FindOne(id)
+	return r.Client.FindOne(id)
 }
 
 func (r *Repo) PostLanguage(language models.Language) (insertedId string, err error) {
-	return r.client.InsertOne(language)
+	return r.Client.InsertOne(language)
 }
 
 func (r *Repo) PutLanguage(id string, language models.Language) (isUpserted bool, err error) {
-	return r.client.ReplaceOne(id, language)
+	return r.Client.ReplaceOne(id, language)
 }
 
 func (r *Repo) PatchLanguage(id string, update models.Language) (err error) {
-	return r.client.UpdateOne(id, update)
+	return r.Client.UpdateOne(id, update)
 }
 
 func (r *Repo) DeleteLanguage(id string) (err error) {
-	return r.client.DeleteOne(id)
+	return r.Client.DeleteOne(id)
 }

@@ -259,20 +259,21 @@ func (ctrl *Controller) UpdateLanguageHandler(repo repo.Repository) http.Handler
 			return
 		}
 
-		if len(update.Creators) > 0 {
-			update.Creators = strings.Split(update.Creators[0], ",")
-		}
-
-		if len(update.Extensions) > 0 {
-			update.Extensions = strings.Split(update.Extensions[0], ",")
-		}
-
 		err = repo.PatchLanguage(id, update)
 		if err != nil {
 			if errors.Is(err, models.ErrInvalidId) {
 				w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 				w.WriteHeader(http.StatusBadRequest)
 				if _, innerErr := w.Write([]byte("The given id is not a valid id")); innerErr != nil {
+					log.Error().Err(innerErr).Msg("Failed to write response")
+				}
+				return
+			}
+
+			if errors.Is(err, models.ErrInvalidRequestBody) {
+				w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+				w.WriteHeader(http.StatusBadRequest)
+				if _, innerErr := w.Write([]byte("Invalid request body")); innerErr != nil {
 					log.Error().Err(innerErr).Msg("Failed to write response")
 				}
 				return

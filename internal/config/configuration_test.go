@@ -26,9 +26,9 @@ func Test_New_ShouldReturnConfigOnSuccess(t *testing.T) {
 	expected := Config{
 		AppName:    AppName,
 		ConfigPath: "../../config.json",
-		Collection: "languages",
+		Table:      "languages",
 		Database:   "languages",
-		DBURL:      "mongodb://localhost:27017/",
+		DBURL:      "root:password@tcp(host.docker.internal:3306)/languages?parseTime=true",
 		Port:       "8080",
 		Version:    Version,
 	}

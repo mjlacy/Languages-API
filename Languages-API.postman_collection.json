@@ -1,7 +1,7 @@
 {
 	"info": {
 		"_postman_id": "6bfd75f4-65d6-44a4-97cd-081017b42abc",
-		"name": "Languages API",
+		"name": "Languages-API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "2629618"
 	},
@@ -32,12 +32,13 @@
 									"});",
 									"",
 									"pm.test(\"Response contains created language\", () => {",
-									"    const newLanguageExists = jsonData.languages.some(language => language._id === pm.environment.get(\"CreatedLanguageId\"));",
+									"    const newLanguageExists = jsonData.languages.some(language => language._id.toString() === pm.environment.get(\"CreatedLanguageId\"));",
 									"    pm.expect(newLanguageExists).to.be.true;",
 									"});"
 								],
 								"type": "text/javascript",
-								"packages": {}
+								"packages": {},
+								"requests": {}
 							}
 						},
 						{
@@ -53,8 +54,8 @@
 									"    \"extensions\": [",
 									"        \".cmm\"",
 									"    ],",
-									"    \"firstAppeared\": \"1900-01-01T00:00:00Z\",",
-									"    \"year\": 1900,",
+									"    \"firstAppeared\": \"2099-01-01T00:00:00Z\",",
+									"    \"year\": 2099,",
 									"    \"wiki\": \"https://en.wikipedia.org/wiki/C--\"",
 									"};",
 									"",
@@ -76,7 +77,8 @@
 									"});"
 								],
 								"type": "text/javascript",
-								"packages": {}
+								"packages": {},
+								"requests": {}
 							}
 						}
 					],
@@ -305,12 +307,13 @@
 									"});",
 									"",
 									"pm.test(\"Response languages array only contains languages with the correct firstAppeared date\", () => {",
-									"    const newLanguageExists = jsonData.languages.all(language => language.firstAppeared === \"1900-01-01T00:00:00Z\");",
+									"    const newLanguageExists = jsonData.languages.all(language => language.firstAppeared === \"2099-01-01T00:00:00Z\");",
 									"    pm.expect(newLanguageExists).to.be.true;",
 									"});"
 								],
 								"type": "text/javascript",
-								"packages": {}
+								"packages": {},
+								"requests": {}
 							}
 						},
 						{
@@ -320,7 +323,8 @@
 									""
 								],
 								"type": "text/javascript",
-								"packages": {}
+								"packages": {},
+								"requests": {}
 							}
 						}
 					],
@@ -333,14 +337,14 @@
 							}
 						],
 						"url": {
-							"raw": "{{BaseUrl}}?firstAppeared=1900-01-01T00:00:00Z",
+							"raw": "{{BaseUrl}}?firstAppeared=2099-01-01T00:00:00Z",
 							"host": [
 								"{{BaseUrl}}"
 							],
 							"query": [
 								{
 									"key": "firstAppeared",
-									"value": "1900-01-01T00:00:00Z"
+									"value": "2099-01-01T00:00:00Z"
 								}
 							]
 						}
@@ -370,12 +374,13 @@
 									"});",
 									"",
 									"pm.test(\"Response languages array only contains languages with the correct year\", () => {",
-									"    const newLanguageExists = jsonData.languages.all(language => language.year === 1900);",
+									"    const newLanguageExists = jsonData.languages.all(language => language.year === 2099);",
 									"    pm.expect(newLanguageExists).to.be.true;",
 									"});"
 								],
 								"type": "text/javascript",
-								"packages": {}
+								"packages": {},
+								"requests": {}
 							}
 						}
 					],
@@ -388,14 +393,14 @@
 							}
 						],
 						"url": {
-							"raw": "{{BaseUrl}}?year=1900",
+							"raw": "{{BaseUrl}}?year=2099",
 							"host": [
 								"{{BaseUrl}}"
 							],
 							"query": [
 								{
 									"key": "year",
-									"value": "1900"
+									"value": "2099"
 								}
 							]
 						}
@@ -480,12 +485,13 @@
 									"});",
 									"",
 									"pm.test(\"Response languages array only contains languages with the correct name and year\", () => {",
-									"    const newLanguageExists = jsonData.languages.all(language => language.name === \"C--\" && language.year === 1900);",
+									"    const newLanguageExists = jsonData.languages.all(language => language.name === \"C--\" && language.year === 2099);",
 									"    pm.expect(newLanguageExists).to.be.true;",
 									"});"
 								],
 								"type": "text/javascript",
-								"packages": {}
+								"packages": {},
+								"requests": {}
 							}
 						}
 					],
@@ -498,7 +504,7 @@
 							}
 						],
 						"url": {
-							"raw": "{{BaseUrl}}?name=C--&year=1900",
+							"raw": "{{BaseUrl}}?name=C--&year=2099",
 							"host": [
 								"{{BaseUrl}}"
 							],
@@ -509,7 +515,7 @@
 								},
 								{
 									"key": "year",
-									"value": "1900"
+									"value": "2099"
 								}
 							]
 						}
@@ -641,11 +647,12 @@
 									"});",
 									"",
 									"pm.test(\"Response body is the correct language\", () => {",
-									"    pm.expect(jsonData._id).to.eql(pm.environment.get(\"CreatedLanguageId\"));",
+									"    pm.expect(jsonData._id.toString()).to.eql(pm.environment.get(\"CreatedLanguageId\"));",
 									"});"
 								],
 								"type": "text/javascript",
-								"packages": {}
+								"packages": {},
+								"requests": {}
 							}
 						},
 						{
@@ -655,7 +662,8 @@
 									""
 								],
 								"type": "text/javascript",
-								"packages": {}
+								"packages": {},
+								"requests": {}
 							}
 						}
 					],
@@ -696,7 +704,8 @@
 									"});"
 								],
 								"type": "text/javascript",
-								"packages": {}
+								"packages": {},
+								"requests": {}
 							}
 						}
 					],
@@ -709,9 +718,9 @@
 							}
 						],
 						"url": {
-							"raw": "{{BaseUrl}}123456789012345678901234",
+							"raw": "{{BaseUrl}}000000000000000000000999",
 							"host": [
-								"{{BaseUrl}}123456789012345678901234"
+								"{{BaseUrl}}000000000000000000000999"
 							]
 						}
 					},
@@ -778,12 +787,13 @@
 									"    pm.response.to.have.header(\"Location\");",
 									"});",
 									"",
-									"pm.test(\"Location header has a valid mongo id\", () => {",
-									"    pm.expect(pm.response.headers.get(\"Location\")).to.match(/^\\/[a-f\\d]{24}$/i);",
+									"pm.test(\"Location header has a valid sql id\", () => {",
+									"    pm.expect(pm.response.headers.get(\"Location\")).to.match(/^\\/\\d+$/i);",
 									"});"
 								],
 								"type": "text/javascript",
-								"packages": {}
+								"packages": {},
+								"requests": {}
 							}
 						}
 					],
@@ -1122,6 +1132,56 @@
 					"response": []
 				},
 				{
+					"name": "Update language partially with only id input",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", () => {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Response body is text\", () => {",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"text/plain\");",
+									"});",
+									"",
+									"pm.test(\"Response body is the error message\", () => {",
+									"    pm.response.to.have.body('Invalid request body');",
+									"});",
+									"",
+									"pm.test(\"Location header is not present\", () => {",
+									"    pm.response.to.not.have.header(\"Location\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"_id\": 999\n}"
+						},
+						"url": {
+							"raw": "{{BaseUrl}}{{CreatedLanguageId}}",
+							"host": [
+								"{{BaseUrl}}{{CreatedLanguageId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Update language partially with unused id",
 					"event": [
 						{
@@ -1145,7 +1205,8 @@
 									"});"
 								],
 								"type": "text/javascript",
-								"packages": {}
+								"packages": {},
+								"requests": {}
 							}
 						}
 					],
@@ -1162,9 +1223,9 @@
 							"raw": "{\n    \"creators\": [\n        \"James Strachan\",\n        \"Guillaume Laforge\",\n        \"Jochen Theodorou\",\n        \"Paul King\",\n        \"Cedric Champeau\"\n    ]\n}"
 						},
 						"url": {
-							"raw": "{{BaseUrl}}123456789012345678901234",
+							"raw": "{{BaseUrl}}000000000000000000000999",
 							"host": [
-								"{{BaseUrl}}123456789012345678901234"
+								"{{BaseUrl}}000000000000000000000999"
 							]
 						}
 					},
@@ -1281,7 +1342,8 @@
 									"});"
 								],
 								"type": "text/javascript",
-								"packages": {}
+								"packages": {},
+								"requests": {}
 							}
 						}
 					],
@@ -1298,9 +1360,9 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{BaseUrl}}123456789012345678901234",
+							"raw": "{{BaseUrl}}000000000000000000000999",
 							"host": [
-								"{{BaseUrl}}123456789012345678901234"
+								"{{BaseUrl}}000000000000000000000999"
 							]
 						}
 					},

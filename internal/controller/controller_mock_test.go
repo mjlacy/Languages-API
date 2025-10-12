@@ -8,8 +8,6 @@ import (
 	"reflect"
 	"testing"
 	"time"
-
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func Test_Header_ShouldReturnStructHeader(t *testing.T) {
@@ -100,7 +98,7 @@ func Test_GetLanguages_ShouldReturnStructLanguages(t *testing.T) {
 	expected := models.Languages{
 		Languages: []models.Language{
 			models.Language{
-				Id:   primitive.NewObjectID(),
+				Id:   1,
 				Name: "Golang",
 				Creators: []string{
 					"Robert Griesemer",
@@ -149,7 +147,7 @@ func Test_GetLanguage_ShouldReturnStructLanguage(t *testing.T) {
 	}
 
 	expected := models.Language{
-		Id:   primitive.NewObjectID(),
+		Id:   1,
 		Name: "Golang",
 		Creators: []string{
 			"Robert Griesemer",

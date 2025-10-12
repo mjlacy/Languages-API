@@ -3,7 +3,7 @@ package main
 import (
 	"languages-api/internal/config"
 	"languages-api/internal/controller"
-	"languages-api/internal/mgo"
+	"languages-api/internal/mariadb"
 	"languages-api/internal/repo"
 	"languages-api/internal/router"
 
@@ -19,7 +19,7 @@ func main() {
 		log.Fatal().Msgf("Error getting configurations: %v", err)
 	}
 
-	db, err := repo.New(cfg, mgo.MongoConnector{})
+	db, err := repo.New(cfg, mariadb.MariaConnector{})
 	if err != nil {
 		log.Fatal().Msgf("Error creating database client: %v", err)
 	}

@@ -3,6 +3,7 @@ package controller
 import (
 	"languages-api/internal/config"
 	"languages-api/internal/models"
+	"strconv"
 
 	"bytes"
 	"encoding/json"
@@ -16,14 +17,13 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 var (
 	cfg = config.Config{
 		AppName:    config.AppName,
 		ConfigPath: "",
-		Collection: "",
+		Table:      "",
 		Database:   "",
 		DBURL:      "",
 		Port:       "",
@@ -320,7 +320,7 @@ func Test_GetLanguagesHandler_ShouldReturnLanguagesOnSuccess(t *testing.T) {
 	expected := models.Languages{
 		Languages: []models.Language{
 			models.Language{
-				Id:   primitive.NewObjectID(),
+				Id:   1,
 				Name: "Golang",
 				Creators: []string{
 					"Robert Griesemer",
@@ -570,7 +570,7 @@ func Test_GetLanguageHandler_ShouldReturnLanguageOnSuccess(t *testing.T) {
 	}
 
 	expected := models.Language{
-		Id:   primitive.NewObjectID(),
+		Id:   1,
 		Name: "Golang",
 		Creators: []string{
 			"Robert Griesemer",
@@ -672,7 +672,7 @@ func Test_CreateLanguageHandler_ShouldHaveContentTypeHeaderOnInternalError(t *te
 	}
 
 	lang := models.Language{
-		Id:   primitive.NewObjectID(),
+		Id:   1,
 		Name: "Golang",
 		Creators: []string{
 			"Robert Griesemer",
@@ -716,7 +716,7 @@ func Test_CreateLanguageHandler_ShouldReturnStatus500OnInternalError(t *testing.
 	}
 
 	lang := models.Language{
-		Id:   primitive.NewObjectID(),
+		Id:   1,
 		Name: "Golang",
 		Creators: []string{
 			"Robert Griesemer",
@@ -760,7 +760,7 @@ func Test_CreateLanguageHandler_ShouldReturnErrorMessageOnInternalError(t *testi
 	}
 
 	lang := models.Language{
-		Id:   primitive.NewObjectID(),
+		Id:   1,
 		Name: "Golang",
 		Creators: []string{
 			"Robert Griesemer",
@@ -804,7 +804,7 @@ func Test_CreateLanguageHandler_ShouldHaveLocationHeaderOnSuccess(t *testing.T) 
 	}
 
 	lang := models.Language{
-		Id:   primitive.NewObjectID(),
+		Id:   1,
 		Name: "Golang",
 		Creators: []string{
 			"Robert Griesemer",
@@ -819,7 +819,7 @@ func Test_CreateLanguageHandler_ShouldHaveLocationHeaderOnSuccess(t *testing.T) 
 		Wiki:          "https://en.wikipedia.org/wiki/Go_(programming_language)",
 	}
 
-	expected := fmt.Sprintf("/%v", url.PathEscape(lang.Id.String()))
+	expected := fmt.Sprintf("/%v", url.PathEscape(strconv.Itoa(lang.Id)))
 
 	reqBody, err := json.Marshal(lang)
 	if err != nil {
@@ -832,7 +832,7 @@ func Test_CreateLanguageHandler_ShouldHaveLocationHeaderOnSuccess(t *testing.T) 
 	}
 
 	rr := httptest.NewRecorder()
-	handler := ctrl.CreateLanguageHandler(mockRepository{id: lang.Id.String()})
+	handler := ctrl.CreateLanguageHandler(mockRepository{id: strconv.Itoa(lang.Id)})
 
 	handler.ServeHTTP(rr, req)
 
@@ -850,7 +850,7 @@ func Test_CreateLanguageHandler_ShouldReturnStatus201OnSuccess(t *testing.T) {
 	}
 
 	lang := models.Language{
-		Id:   primitive.NewObjectID(),
+		Id:   1,
 		Name: "Golang",
 		Creators: []string{
 			"Robert Griesemer",
@@ -894,7 +894,7 @@ func Test_CreateLanguageHandler_ShouldReturnNoMessageOnSuccess(t *testing.T) {
 	}
 
 	lang := models.Language{
-		Id:   primitive.NewObjectID(),
+		Id:   1,
 		Name: "Golang",
 		Creators: []string{
 			"Robert Griesemer",
@@ -996,7 +996,7 @@ func Test_UpsertLanguageHandler_ShouldHaveContentTypeHeaderOnInvalidIdError(t *t
 	}
 
 	lang := models.Language{
-		Id:   primitive.NewObjectID(),
+		Id:   1,
 		Name: "Golang",
 		Creators: []string{
 			"Robert Griesemer",
@@ -1040,7 +1040,7 @@ func Test_UpsertLanguageHandler_ShouldReturnStatus400OnInvalidIdError(t *testing
 	}
 
 	lang := models.Language{
-		Id:   primitive.NewObjectID(),
+		Id:   1,
 		Name: "Golang",
 		Creators: []string{
 			"Robert Griesemer",
@@ -1084,7 +1084,7 @@ func Test_UpsertLanguageHandler_ShouldReturnErrorMessageOnInvalidIdError(t *test
 	}
 
 	lang := models.Language{
-		Id:   primitive.NewObjectID(),
+		Id:   1,
 		Name: "Golang",
 		Creators: []string{
 			"Robert Griesemer",
@@ -1130,7 +1130,7 @@ func Test_UpsertLanguageHandler_ShouldHaveContentTypeHeaderOnInternalError(t *te
 	}
 
 	lang := models.Language{
-		Id:   primitive.NewObjectID(),
+		Id:   1,
 		Name: "Golang",
 		Creators: []string{
 			"Robert Griesemer",
@@ -1174,7 +1174,7 @@ func Test_UpsertLanguageHandler_ShouldReturnStatus500OnInternalError(t *testing.
 	}
 
 	lang := models.Language{
-		Id:   primitive.NewObjectID(),
+		Id:   1,
 		Name: "Golang",
 		Creators: []string{
 			"Robert Griesemer",
@@ -1218,7 +1218,7 @@ func Test_UpsertLanguageHandler_ShouldReturnErrorMessageOnInternalError(t *testi
 	}
 
 	lang := models.Language{
-		Id:   primitive.NewObjectID(),
+		Id:   1,
 		Name: "Golang",
 		Creators: []string{
 			"Robert Griesemer",
@@ -1262,7 +1262,7 @@ func Test_UpsertLanguageHandler_ShouldHaveLocationHeaderOnIsUpsertedSuccess(t *t
 	}
 
 	lang := models.Language{
-		Id:   primitive.NewObjectID(),
+		Id:   1,
 		Name: "Golang",
 		Creators: []string{
 			"Robert Griesemer",
@@ -1310,7 +1310,7 @@ func Test_UpsertLanguageHandler_ShouldReturnStatus201OnIsUpsertedSuccess(t *test
 	}
 
 	lang := models.Language{
-		Id:   primitive.NewObjectID(),
+		Id:   1,
 		Name: "Golang",
 		Creators: []string{
 			"Robert Griesemer",
@@ -1352,7 +1352,7 @@ func Test_UpsertLanguageHandler_ShouldReturnStatus200OnNonIsUpsertedSuccess(t *t
 	}
 
 	lang := models.Language{
-		Id:   primitive.NewObjectID(),
+		Id:   1,
 		Name: "Golang",
 		Creators: []string{
 			"Robert Griesemer",
@@ -1396,7 +1396,7 @@ func Test_UpsertLanguageHandler_ShouldReturnNoMessageOnSuccess(t *testing.T) {
 	}
 
 	lang := models.Language{
-		Id:   primitive.NewObjectID(),
+		Id:   1,
 		Name: "Golang",
 		Creators: []string{
 			"Robert Griesemer",
@@ -1498,7 +1498,7 @@ func Test_UpdateLanguageHandler_ShouldHaveContentTypeHeaderOnInvalidIdError(t *t
 	}
 
 	lang := models.Language{
-		Id:   primitive.NewObjectID(),
+		Id:   1,
 		Name: "Golang",
 		Creators: []string{
 			"Robert Griesemer",
@@ -1542,7 +1542,7 @@ func Test_UpdateLanguageHandler_ShouldReturnStatus400OnInvalidIdError(t *testing
 	}
 
 	lang := models.Language{
-		Id:   primitive.NewObjectID(),
+		Id:   1,
 		Name: "Golang",
 		Creators: []string{
 			"Robert Griesemer",
@@ -1586,7 +1586,7 @@ func Test_UpdateLanguageHandler_ShouldReturnErrorMessageOnInvalidIdError(t *test
 	}
 
 	lang := models.Language{
-		Id:   primitive.NewObjectID(),
+		Id:   1,
 		Name: "Golang",
 		Creators: []string{
 			"Robert Griesemer",
@@ -1632,7 +1632,7 @@ func Test_UpdateLanguageHandler_ShouldHaveContentTypeHeaderOnNotFoundError(t *te
 	}
 
 	lang := models.Language{
-		Id:   primitive.NewObjectID(),
+		Id:   1,
 		Name: "Golang",
 		Creators: []string{
 			"Robert Griesemer",
@@ -1676,7 +1676,7 @@ func Test_UpdateLanguageHandler_ShouldReturnStatus404OnNotFoundError(t *testing.
 	}
 
 	lang := models.Language{
-		Id:   primitive.NewObjectID(),
+		Id:   1,
 		Name: "Golang",
 		Creators: []string{
 			"Robert Griesemer",
@@ -1720,7 +1720,7 @@ func Test_UpdateLanguageHandler_ShouldReturnErrorMessageOnNotFoundError(t *testi
 	}
 
 	lang := models.Language{
-		Id:   primitive.NewObjectID(),
+		Id:   1,
 		Name: "Golang",
 		Creators: []string{
 			"Robert Griesemer",
@@ -1766,7 +1766,7 @@ func Test_UpdateLanguageHandler_ShouldHaveContentTypeHeaderOnInternalError(t *te
 	}
 
 	lang := models.Language{
-		Id:   primitive.NewObjectID(),
+		Id:   1,
 		Name: "Golang",
 		Creators: []string{
 			"Robert Griesemer",
@@ -1810,7 +1810,7 @@ func Test_UpdateLanguageHandler_ShouldReturnStatus500OnInternalError(t *testing.
 	}
 
 	lang := models.Language{
-		Id:   primitive.NewObjectID(),
+		Id:   1,
 		Name: "Golang",
 		Creators: []string{
 			"Robert Griesemer",
@@ -1854,7 +1854,7 @@ func Test_UpdateLanguageHandler_ShouldReturnErrorMessageOnInternalError(t *testi
 	}
 
 	lang := models.Language{
-		Id:   primitive.NewObjectID(),
+		Id:   1,
 		Name: "Golang",
 		Creators: []string{
 			"Robert Griesemer",
@@ -1898,7 +1898,7 @@ func Test_UpdateLanguageHandler_ShouldReturnStatus200OnSuccess(t *testing.T) {
 	}
 
 	lang := models.Language{
-		Id:   primitive.NewObjectID(),
+		Id:   1,
 		Name: "Golang",
 		Creators: []string{
 			"Robert Griesemer",
@@ -1942,7 +1942,7 @@ func Test_UpdateLanguageHandler_ShouldReturnNoMessageOnSuccess(t *testing.T) {
 	}
 
 	lang := models.Language{
-		Id:   primitive.NewObjectID(),
+		Id:   1,
 		Name: "Golang",
 		Creators: []string{
 			"Robert Griesemer",

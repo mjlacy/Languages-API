@@ -1,6 +1,6 @@
 {
   "Port": "8080",
-  "DBURL": "mongodb://localhost:27017/",
+  "DBURL": "root:password@tcp(host.docker.internal:3306)/languages?parseTime=true",
   "Database": "languages",
-  "Collection": "languages"
+  "Table": "languages"
 }
