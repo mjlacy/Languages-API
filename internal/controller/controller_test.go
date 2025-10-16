@@ -87,7 +87,7 @@ func Test_HealthCheckHandler_ShouldReturnErrorMessageOnPingError(t *testing.T) {
 		},
 		HealthCodes: HealthCodes{
 			Application:     http.StatusText(http.StatusOK),
-			MongoConnection: http.StatusText(http.StatusInternalServerError),
+			MariaConnection: http.StatusText(http.StatusInternalServerError),
 		},
 	}
 
@@ -137,7 +137,7 @@ func Test_HealthCheckHandler_ShouldReturnSuccessMessageOnSuccess(t *testing.T) {
 		},
 		HealthCodes: HealthCodes{
 			Application:     http.StatusText(http.StatusOK),
-			MongoConnection: http.StatusText(http.StatusOK),
+			MariaConnection: http.StatusText(http.StatusOK),
 		},
 	}
 

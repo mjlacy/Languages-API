@@ -34,7 +34,7 @@ type Info struct {
 
 type HealthCodes struct {
 	Application     string `json:"Application"`
-	MongoConnection string `json:"MongoConnection"`
+	MariaConnection string `json:"MariaConnection"`
 }
 
 type HealthCheck struct {
@@ -67,7 +67,7 @@ func (ctrl *Controller) HealthCheckHandler(repo repo.Repository) http.HandlerFun
 			},
 			HealthCodes: HealthCodes{
 				Application:     http.StatusText(http.StatusOK),
-				MongoConnection: http.StatusText(mongoStatus),
+				MariaConnection: http.StatusText(mongoStatus),
 			},
 		}
 

@@ -1,7 +1,7 @@
 {
 	"info": {
 		"_postman_id": "6bfd75f4-65d6-44a4-97cd-081017b42abc",
-		"name": "Languages-API",
+		"name": "Languages API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "2629618"
 	},
@@ -1544,14 +1544,15 @@
 							"    pm.expect(ApplicationNameExists).to.be.true;",
 							"});",
 							"",
-							"pm.test(\"Response contains OK value for MongoConnection\", () => {",
-							"    const MongoConnectionExists = jsonData.HealthCodes.MongoConnection === \"OK\";",
-							"    pm.expect(MongoConnectionExists).to.be.true;",
+							"pm.test(\"Response contains OK value for MariaConnection\", () => {",
+							"    const MariaConnectionExists = jsonData.HealthCodes.MariaConnection === \"OK\";",
+							"    pm.expect(MariaConnectionExists).to.be.true;",
 							"});",
 							""
 						],
 						"type": "text/javascript",
-						"packages": {}
+						"packages": {},
+						"requests": {}
 					}
 				}
 			],
