@@ -38,6 +38,11 @@ services:
       - "8080:8080"
     volumes:
       - "../../config.json:/app/config.json"
+  unit-tests:
+    container_name: unit-tests
+    build:
+      context: "../../"
+      dockerfile: "./deployments/sandbox/UnitTests.Dockerfile"
   newman:
     image: postman/newman:alpine
     container_name: newman

@@ -3,6 +3,7 @@ package repo
 import (
 	"languages-api/internal/config"
 	"languages-api/internal/mariadb"
+	"strings"
 
 	"testing"
 
@@ -11,7 +12,7 @@ import (
 
 func Test_New_ShouldReturnConnectError(t *testing.T) {
 	_, err := New(config.Config{DBURL: "root:password@tcp(host.docker.internal:3306)/languages?parseTime=true"}, mariadb.MariaConnector{})
-	if err.Error() != "dial tcp: lookup host.docker.internal: no such host" {
+	if !strings.Contains(err.Error(), "connect: connection refused") {
 		t.Errorf("New() returned an unexpected error")
 	}
 }
