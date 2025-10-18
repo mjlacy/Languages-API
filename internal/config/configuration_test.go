@@ -28,7 +28,7 @@ func Test_New_ShouldReturnConfigOnSuccess(t *testing.T) {
 		ConfigPath: "../../config.json",
 		Collection: "languages",
 		Database:   "languages",
-		DBURL:      "mongodb://localhost:27017/",
+		DBURL:      "mongodb://host.docker.internal:27017/",
 		Port:       "8080",
 		Version:    Version,
 	}

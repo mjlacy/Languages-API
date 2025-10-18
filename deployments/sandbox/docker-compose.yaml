@@ -1,0 +1,42 @@
+services:
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - "./init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro"
+    healthcheck:
+      test: [ "CMD", "mongosh", "--eval", "db.runCommand({ ping: 1 }).ok" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+  languages-api:
+    container_name: languages-api
+    build:
+      context: "../../"
+      dockerfile: "./build/package/Dockerfile"
+    depends_on:
+      mongo:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    volumes:
+      - "../../config.json:/app/config.json"
+  unit-tests:
+    container_name: unit-tests
+    build:
+      context: "../../"
+      dockerfile: "./deployments/sandbox/UnitTests.Dockerfile"
+  newman:
+    image: postman/newman:alpine
+    container_name: newman
+    depends_on:
+      - languages-api
+    command: run /etc/newman/collections/Languages-API.postman_collection.json -e /etc/newman/environments/Languages-API.postman_environment.json --reporters cli
+    volumes:
+      - ../../Languages-API.postman_collection.json:/etc/newman/collections/Languages-API.postman_collection.json
+      - ../../Languages-API.postman_environment.json:/etc/newman/environments/Languages-API.postman_environment.json
+    working_dir: /etc/newman

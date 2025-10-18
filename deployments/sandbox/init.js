@@ -1,0 +1,341 @@
+db = db.getSiblingDB('languages');
+db.createUser({
+    user: "root",
+    pwd: "password",
+    roles: [{ role: "readWrite", db: "languages" }],
+});
+db.createCollection("languages");
+db.languages.insertMany([
+    {
+        "name": "Assembly",
+        "creators": [
+            "Kathleen Booth"
+        ],
+        "extensions": [
+            ".asm",
+            ".s",
+            ".inc",
+            ".wla",
+            ".SRC"
+        ],
+        "firstAppeared": null,
+        "year": 1947,
+        "wiki": "https://en.wikipedia.org/wiki/Assembly_language"
+    },
+    {
+        "name": "Bash",
+        "creators": [
+            "Brian Fox"
+        ],
+        "extensions": [
+            ".sh"
+        ],
+        "firstAppeared": "1989-06-08T00:00:00Z",
+        "year": 1989,
+        "wiki": "https://en.wikipedia.org/wiki/Bash_(Unix_shell)"
+    },
+    {
+        "name": "C",
+        "creators": [
+            "Dennis Ritchie"
+        ],
+        "extensions": [
+            ".c",
+            ".h"
+        ],
+        "firstAppeared": null,
+        "year": 1972,
+        "wiki": "https://en.wikipedia.org/wiki/C_(programming_language)"
+    },
+    {
+        "name": "C++",
+        "creators": [
+            "Bjarne Stroustrup"
+        ],
+        "extensions": [
+            ".C",
+            ".cc",
+            ".cpp",
+            ".cxx",
+            ".c++",
+            ".h",
+            ".H",
+            ",.hh",
+            ".hpp",
+            ".hxx",
+            ".h++",
+            ".cppm",
+            ".ixx"
+        ],
+        "firstAppeared": null,
+        "year": 1985,
+        "wiki": "https://en.wikipedia.org/wiki/C%2B%2B"
+    },
+    {
+        "name": "C#",
+        "creators": [
+            "Anders Hejlsberg"
+        ],
+        "extensions": [
+            ".cs",
+            ".csx"
+        ],
+        "firstAppeared": null,
+        "year": 2000,
+        "wiki": "https://en.wikipedia.org/wiki/C_Sharp_(programming_language)"
+    },
+    {
+        "name": "COBOL",
+        "creators": [
+            "Howard Bromberg",
+            "Norman Discount",
+            "Vernon Reeves",
+            "Jean E. Sammet",
+            "William Selden",
+            "Gertrude Tierney"
+        ],
+        "extensions": [
+            ".cbl",
+            ".cob",
+            ".cpy"
+        ],
+        "firstAppeared": null,
+        "year": 1959,
+        "wiki": "https://en.wikipedia.org/wiki/COBOL"
+    },
+    {
+        "name": "Elixir",
+        "creators": [
+            "José Valim"
+        ],
+        "extensions": [
+            ".ex",
+            ".exs"
+        ],
+        "firstAppeared": null,
+        "year": 2012,
+        "wiki": "https://en.wikipedia.org/wiki/Elixir_(programming_language)"
+    },
+    {
+        "name": "Fortran",
+        "creators": [
+            "John Backus"
+        ],
+        "extensions": [
+            ".f90",
+            ".f",
+            ".for"
+        ],
+        "firstAppeared": null,
+        "year": 1957,
+        "wiki": "https://en.wikipedia.org/wiki/Fortran"
+    },
+    {
+        "name": "Golang",
+        "creators": [
+            "Robert Griesemer",
+            "Rob Pike",
+            "Ken Thompson"
+        ],
+        "extensions": [
+            ".go"
+        ],
+        "firstAppeared": "2009-11-10T00:00:00Z",
+        "year": 2009,
+        "wiki": "https://en.wikipedia.org/wiki/Go_(programming_language)"
+    },
+    {
+        "name": "HTML",
+        "creators": [
+            "Tim Berners-Lee"
+        ],
+        "extensions": [
+            ".html",
+            ".htm"
+        ],
+        "firstAppeared": null,
+        "year": 1993,
+        "wiki": "https://en.wikipedia.org/wiki/HTML"
+    },
+    {
+        "name": "Java",
+        "creators": [
+            "James Gosling"
+        ],
+        "extensions": [
+            ".java",
+            ".class",
+            ".jar",
+            ".jmod"
+        ],
+        "firstAppeared": "1995-05-23T00:00:00Z",
+        "year": 1995,
+        "wiki": "https://en.wikipedia.org/wiki/Java_(programming_language)"
+    },
+    {
+        "name": "JavaScript",
+        "creators": [
+            "Brendan Eich"
+        ],
+        "extensions": [
+            ".js",
+            ".cjs",
+            ".mjs"
+        ],
+        "firstAppeared": "1995-12-04T00:00:00Z",
+        "year": 1995,
+        "wiki": "https://en.wikipedia.org/wiki/JavaScript"
+    },
+    {
+        "name": "Perl",
+        "creators": [
+            "Larry Wall"
+        ],
+        "extensions": [
+            ".plx",
+            ".pl",
+            ".pm",
+            ".xs",
+            ".t",
+            ".pod",
+            ".cgi"
+        ],
+        "firstAppeared": "1987-12-18T00:00:00Z",
+        "year": 1987,
+        "wiki": "https://en.wikipedia.org/wiki/Perl"
+    },
+    {
+        "name": "PHP",
+        "creators": [
+            "Rasmus Lerdorf"
+        ],
+        "extensions": [
+            ".php",
+            ".phar",
+            ".phtml",
+            ".pht",
+            ".phps"
+        ],
+        "firstAppeared": "1995-06-08T00:00:00Z",
+        "year": 1995,
+        "wiki": "https://en.wikipedia.org/wiki/PHP"
+    },
+    {
+        "name": "Python",
+        "creators": [
+            "Guido van Rossum"
+        ],
+        "extensions": [
+            ".py",
+            ".pyw",
+            ".pyz",
+            ".pyi",
+            ".pyc",
+            ".pyd"
+        ],
+        "firstAppeared": "1991-02-20T00:00:00Z",
+        "year": 1991,
+        "wiki": "https://en.wikipedia.org/wiki/Python_(programming_language)"
+    },
+    {
+        "name": "Ruby",
+        "creators": [
+            "Yukihiro Matsumoto"
+        ],
+        "extensions": [
+            ".rb",
+            ".ru"
+        ],
+        "firstAppeared": null,
+        "year": 1995,
+        "wiki": "https://en.wikipedia.org/wiki/Ruby_(programming_language)"
+    },
+    {
+        "name": "Rust",
+        "creators": [
+            "Graydon Hoare"
+        ],
+        "extensions": [
+            ".rs",
+            ".rlib"
+        ],
+        "firstAppeared": "2015-05-15T00:00:00Z",
+        "year": 2015,
+        "wiki": "https://en.wikipedia.org/wiki/Rust_(programming_language)"
+    },
+    {
+        "name": "Scala",
+        "creators": [
+            "Martin Odersky"
+        ],
+        "extensions": [
+            ".scala",
+            ".sc"
+        ],
+        "firstAppeared": "2004-01-20T00:00:00Z",
+        "year": 2004,
+        "wiki": "https://en.wikipedia.org/wiki/Scala_(programming_language)"
+    },
+    {
+        "name": "SQL",
+        "creators": [
+            "Donald D. Chamberlin",
+            "Raymond F. Boyce"
+        ],
+        "extensions": [
+            ".sql"
+        ],
+        "firstAppeared": null,
+        "year": 1974,
+        "wiki": "https://en.wikipedia.org/wiki/SQL"
+    },
+    {
+        "name": "Swift",
+        "creators": [
+            "Chris Lattner",
+            "Doug Gregor",
+            "John McCall",
+            "Ted Kremenek",
+            "Joe Groff"
+        ],
+        "extensions": [
+            ".swift",
+            ".SWIFT"
+        ],
+        "firstAppeared": "2014-06-02T00:00:00Z",
+        "year": 2014,
+        "wiki": "https://en.wikipedia.org/wiki/Swift_(programming_language)"
+    },
+    {
+        "name": "TypeScript",
+        "creators": [
+            "Anders Hejlsberg"
+        ],
+        "extensions": [
+            ".ts",
+            ".tsx",
+            ".mts",
+            ".cts"
+        ],
+        "firstAppeared": "2012-10-01T00:00:00Z",
+        "year": 2012,
+        "wiki": "https://en.wikipedia.org/wiki/TypeScript"
+    },
+    {
+        "name": "XML",
+        "creators": [
+            "Tim Bray",
+            "Jean Paoli",
+            "Michael Sperberg-McQueen",
+            "Eve Maler",
+            "François Yergeau",
+            "John W. Cowan"
+        ],
+        "extensions": [
+            ".xml"
+        ],
+        "firstAppeared": "1998-02-10T00:00:00Z",
+        "year": 1998,
+        "wiki": "https://en.wikipedia.org/wiki/XML"
+    }
+]);
